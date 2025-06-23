@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhD Retreat 2026</title>
+    <meta name="description" content="PhD Retreat 2026 - March 18-20">
+    <meta name="theme-color" content="#2563eb">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUGhEIFJldHJlYXQgMjAyNiIsInNob3J0X25hbWUiOiJQaEQgUmV0cmVhdCIsImRlc2NyaXB0aW9uIjoiUGhEIFJldHJlYXQgMjAyNiAtIE1hcmNoIDE4LTIwIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMyNTYzZWIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTVRJNElpQm9aV2xuYUhROUlqRXlPQ0lnYUdWNVpXeHNJajF1YjNObGNtRnNJaUJtYVd4c0lqMWpiM0psUTI5c2IzSWlJSGRwWkhSb1BTSTRJaUJvWldsbmFIUTlJamdpUGp4d1lYUm9JR1E5SWsweE5qUWdOVFZCTmpRZ05qUWdNQ0F4TURBZ05qUXROalJhYlRBZ05qUkJOalFnTmpRZ01DQXhNVEFnTVRBZ05qUjZJaUJtYVd4c1BTSmpiM0psUTI5c2IzSWlMejQ4Y0dGMGFDQmtQU0pOTnpRZ09EQnNOelFnTmpZdE5qWWdORFpJT0RSV04yZ3ROamRzTFRWTklEZHpMUzQyT1M0Mk9TMHpNQzQzTFRZNExqSXROekF0TlRSak1DMDNMak10TXk0eExUZ3VNeTAzTGpFdE1UTnpMUzAyTGprdU5qa3RNeTQwTGpjdE9DMHhNeTQyZWlJZ1ptbHNiRDBpWTI5eVpVTnZiRzl5SWk4K1BDOW5Qand2YzNabksrIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwifV19">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background-color: #f9fafb;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .nav {
+            display: flex;
+            overflow-x: auto;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-item {
+            flex-shrink: 0;
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-item.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .nav-item:hover {
+            color: #2563eb;
+            background: #f8fafc;
+        }
+
+        .content {
+            padding: 1rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .agenda-day {
+            background: white;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .day-header {
+            background: #f3f4f6;
+            padding: 1rem;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .agenda-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .agenda-item:last-child {
+            border-bottom: none;
+        }
+
+        .time {
+            flex-shrink: 0;
+            font-weight: 600;
+            color: #2563eb;
+            font-size: 0.875rem;
+            width: 4rem;
+        }
+
+        .agenda-content h3 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #1f2937;
+        }
+
+        .agenda-content p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .speaker-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .speaker-card h3 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .speaker-card .title {
+            color: #2563eb;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        .speaker-card p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h3 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card p {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #2563eb;
+        }
+
+        .install-prompt {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .install-prompt p {
+            color: #1e40af;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .install-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        @media (min-width: 640px) {
+            .container {
+                max-width: 28rem;
+                margin: 0 auto;
+                box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>PhD Retreat 2026</h1>
+            <p>March 18-20 • Innovation & Collaboration</p>
+        </header>
+
+        <nav class="nav">
+            <button class="nav-item active" data-section="agenda">Agenda</button>
+            <button class="nav-item" data-section="speakers">Speakers</button>
+            <button class="nav-item" data-section="venue">Venue</button>
+            <button class="nav-item" data-section="contact">Contact</button>
+        </nav>
+
+        <main class="content">
+            <div class="install-prompt" id="installPrompt" style="display: none;">
+                <p>📱 Install this app on your device for quick access!</p>
+                <button class="install-btn" id="installBtn">Add to Home Screen</button>
+            </div>
+
+            <section class="section active" id="agenda">
+                <div class="agenda-day">
+                    <div class="day-header">Tuesday, March 18, 2026</div>
+                    <div class="agenda-item">
+                        <div class="time">09:00</div>
+                        <div class="agenda-content">
+                            <h3>Registration & Welcome Coffee</h3>
+                            <p>Check-in and networking with fellow PhD students</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="time">10:00</div>
+                        <div class="agenda-content">
+                            <h3>Opening Keynote</h3>
+                            <p>Dr. Sarah Chen - "Interdisciplinary Research in the Digital Age"</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="time">11:30</div>
+                        <div class="agenda-content">
+                            <h3>Coffee Break</h3>
+                            <p>Networking and refreshments</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="time">12:00</div>
+                        <div class="agenda-content">
+                            <h3>Panel: Research Methodologies</h3>
+                            <p>Modern approaches to PhD research across disciplines</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="time">13:30</div>
+                        <div class="agenda-content">
+                            <h3>Lunch</h3>
+                            <p>Catered lunch with networking opportunities</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="agenda-day">
+                    <div class="day-header">Wednesday, March 19, 2026</div>
+                    <div class="agenda-item">
+                        <div class="time">09:00</div>
+                        <div class="agenda-content">
+                            <h3>Workshop Sessions</h3>
+                            <p>Parallel workshops on writing, presentations, and collaboration</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="time">11:00</div>
+                        <div class="agenda-content">
+                            <h3>PhD Student Presentations</h3>
+                            <p>Lightning talks by retreat participants</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="time">14:00</div>
+                        <div class="agenda-content">
+                            <h3>Group Activities</h3>
+                            <p>Team building and collaborative exercises</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="time">19:00</div>
+                        <div class="agenda-content">
+                            <h3>Retreat Dinner</h3>
+                            <p>Formal dinner with guest speakers</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="agenda-day">
+                    <div class="day-header">Thursday, March 20, 2026</div>
+                    <div class="agenda-item">
+                        <div class="time">09:00</div>
+                        <div class="agenda-content">
+                            <h3>Future of Academia</h3>
+                            <p>Panel discussion on career paths and opportunities</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="time">11:00</div>
+                        <div class="agenda-content">
+                            <h3>Closing Ceremony</h3>
+                            <p>Wrap-up, feedback, and next steps</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="time">12:00</div>
+                        <div class="agenda-content">
+                            <h3>Departure</h3>
+                            <p>Check-out and farewell</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section" id="speakers">
+                <div class="speaker-card">
+                    <h3>Dr. Sarah Chen</h3>
+                    <div class="title">Keynote Speaker • MIT Computer Science</div>
+                    <p>Dr. Chen is a renowned researcher in artificial intelligence and machine learning, with over 15 years of experience in interdisciplinary research. She leads the AI Ethics Lab at MIT and has published extensively on responsible AI development.</p>
+                </div>
+
+                <div class="speaker-card">
+                    <h3>Prof. Michael Rodriguez</h3>
+                    <div class="title">Panel Moderator • Stanford Psychology</div>
+                    <p>Professor Rodriguez specializes in cognitive psychology and research methodology. He has mentored over 50 PhD students and is known for his innovative approaches to academic research and collaboration.</p>
+                </div>
+
+                <div class="speaker-card">
+                    <h3>Dr. Emily Watson</h3>
+                    <div class="title">Workshop Leader • Oxford English Literature</div>
+                    <p>Dr. Watson brings expertise in academic writing and communication. She conducts workshops worldwide on effective research presentation and has authored several books on academic communication skills.</p>
+                </div>
+            </section>
+
+            <section class="section" id="venue">
+                <div class="info-card">
+                    <h3>📍 Venue Location</h3>
+                    <p><strong>Mountain View Conference Center</strong></p>
+                    <p>123 Research Boulevard</p>
+                    <p>Innovation Valley, CA 94043</p>
+                    <p>United States</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>🏨 Accommodation</h3>
+                    <p><strong>University Guest House</strong></p>
+                    <p>All participants will be accommodated in shared rooms at the nearby University Guest House, just a 5-minute walk from the conference center.</p>
+                    <p><strong>Check-in:</strong> March 18, 2:00 PM</p>
+                    <p><strong>Check-out:</strong> March 20, 11:00 AM</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>🚗 Transportation</h3>
+                    <p><strong>From Airport:</strong> Shuttle service will be provided from San Francisco International Airport (SFO) on March 18 at 10:00 AM and 2:00 PM.</p>
+                    <p><strong>Local Transport:</strong> The venue is walkable, with all activities within the conference center and guest house.</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>📋 What to Bring</h3>
+                    <p>• Laptop and chargers</p>
+                    <p>• Comfortable clothing for activities</p>
+                    <p>• Business casual attire for dinner</p>
+                    <p>• Any presentation materials (if presenting)</p>
+                    <p>• Notebook and pens</p>
+                </div>
+            </section>
+
+            <section class="section" id="contact">
+                <div class="info-card">
+                    <h3>📞 Emergency Contacts</h3>
+                    <div class="contact-item">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                        <div>
+                            <p><strong>Dr. Jennifer Liu (Organizer)</strong></p>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <div>
+                            <p><strong>General Inquiries</strong></p>
+                            <p>phd.retreat2026@university.edu</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>ℹ️ Important Information</h3>
+                    <p><strong>Registration Deadline:</strong> February 15, 2026</p>
+                    <p><strong>Capacity:</strong> Limited to 50 participants</p>
+                    <p><strong>Cost:</strong> Fully funded (accommodation, meals, transport included)</p>
+                    <p><strong>Requirements:</strong> Currently enrolled PhD students</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>📱 Social Media</h3>
+                    <p>Follow us for updates:</p>
+                    <p><strong>Twitter:</strong> @PhDRetreat2026</p>
+                    <p><strong>Instagram:</strong> @phdretreat2026</p>
+                    <p><strong>LinkedIn:</strong> PhD Retreat 2026</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Navigation functionality
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetSection = item.dataset.section;
+                
+                // Update active nav item
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Update active section
+                sections.forEach(section => section.classList.remove('active'));
+                document.getElementById(targetSection).classList.add('active');
+            });
+        });
+
+        // PWA Installation
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installPrompt.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installPrompt.style.display = 'none';
+            }
+        });
+
+        // Hide install prompt when app is installed
+        window.addEventListener('appinstalled', () => {
+            installPrompt.style.display = 'none';
+        });
+
+        // Service Worker Registration (for offline functionality)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgKGUpID0+IHsKICBjb25zb2xlLmxvZygnU2VydmljZSBXb3JrZXIgaW5zdGFsbGVkJyk7Cn0pOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIChlKSA9PiB7CiAgLy8gQmFzaWMgZmV0Y2ggaGFuZGxpbmcgZm9yIG9mZmxpbmUgc3VwcG9ydAogIGUucmVzcG9uZFdpdGgoZmV0Y2goZS5yZXF1ZXN0KSk7Cn0pOw==')
+                .then((registration) => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch((registrationError) => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
