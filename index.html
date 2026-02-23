@@ -52,9 +52,11 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-header h2 { color: #1f2937; font-size: 1.25rem; margin-bottom: 0.5rem; text-align: center; }
         .modal-header p { color: #6b7280; font-size: 0.875rem; text-align: center; margin-bottom: 1.5rem; }
-        .star-rating { display: flex; justify-content: center; gap: 0.5rem; margin: 2rem 0; flex-wrap: wrap; }
-        .star { font-size: 2rem; cursor: pointer; transition: all 0.2s; color: #d1d5db; user-select: none; }
-        .star:hover, .star.active { color: #fbbf24; transform: scale(1.2); }
+        .rating-display { text-align: center; font-size: 2rem; font-weight: 700; color: #2563eb; margin-bottom: 1rem; min-height: 2.5rem; }
+        .star-rating { display: flex; justify-content: center; gap: 0.5rem; margin: 1rem 0 2rem 0; flex-wrap: wrap; }
+        .star { font-size: 2rem; cursor: pointer; transition: all 0.2s; user-select: none; filter: grayscale(100%); opacity: 0.3; }
+        .star.active { filter: grayscale(0%) drop-shadow(0 0 8px rgba(251, 191, 36, 0.6)); opacity: 1; transform: scale(1.15); }
+        .star:hover { filter: grayscale(0%); opacity: 0.8; transform: scale(1.1); }
         .modal-buttons { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
         .btn { flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
         .btn-primary { background: #2563eb; color: white; }
@@ -72,6 +74,8 @@
         .rating-item h4 { color: #1f2937; margin-bottom: 0.75rem; }
         .rating-stats { display: flex; justify-content: space-between; align-items: center; }
         .rating-score { font-size: 1.75rem; font-weight: 700; color: #2563eb; }
+        .live-indicator { display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-left: 0.5rem; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
         @media (min-width: 640px) { .container { max-width: 28rem; margin: 0 auto; box-shadow: 0 0 0 1px rgba(0,0,0,0.05); } }
     </style>
@@ -226,8 +230,8 @@
 
             <section class="section" id="admin">
                 <div class="admin-header">
-                    <h2>🎯 Admin Dashboard</h2>
-                    <p style="opacity:0.9; margin-top:0.25rem;">Live Ratings & Rankings</p>
+                    <h2>🎯 Admin Dashboard <span class="live-indicator"></span></h2>
+                    <p style="opacity:0.9; margin-top:0.25rem;">Live Ratings & Rankings (Auto-refreshing)</p>
                 </div>
                 
                 <div style="background: white; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
@@ -241,7 +245,7 @@
                 <h3 style="color: #1f2937; margin-bottom: 1rem;">🏆 Session Rankings</h3>
                 <div id="adminContent"></div>
 
-                <button class="btn btn-secondary" onclick="loadAdminData()" style="width:100%; margin-top:1rem;">🔄 Refresh Data</button>
+                <button class="btn btn-secondary" onclick="loadAdminData()" style="width:100%; margin-top:1rem;">🔄 Refresh Now</button>
                 <button class="btn btn-secondary" id="backBtn" style="width:100%; margin-top:0.5rem;">← Back to Contact</button>
             </section>
         </main>
@@ -254,6 +258,8 @@
                 <h2 id="modalTitle">Rate This Session</h2>
                 <p id="modalSubtitle">Select your rating (1-10 stars)</p>
             </div>
+            
+            <div class="rating-display" id="ratingDisplay">Select rating</div>
             
             <div class="star-rating">
                 <span class="star" data-rating="1">⭐</span>
@@ -277,57 +283,30 @@
         </div>
     </div>
 
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <script>
-        // Storage Helper - Works with localStorage (GitHub Pages compatible)
-        const RatingStorage = {
-            // Save rating
-            save: function(talkId, rating) {
-                try {
-                    // Get existing ratings for this talk
-                    const key = `retreat_ratings_${talkId}`;
-                    const existing = localStorage.getItem(key);
-                    let data = existing ? JSON.parse(existing) : { ratings: [], sum: 0, count: 0 };
-                    
-                    // Add new rating
-                    data.ratings.push(rating);
-                    data.sum += rating;
-                    data.count += 1;
-                    
-                    // Save back
-                    localStorage.setItem(key, JSON.stringify(data));
-                    return true;
-                } catch (error) {
-                    console.error('Error saving rating:', error);
-                    return false;
-                }
-            },
-            
-            // Get ratings for a talk
-            get: function(talkId) {
-                try {
-                    const key = `retreat_ratings_${talkId}`;
-                    const data = localStorage.getItem(key);
-                    return data ? JSON.parse(data) : { ratings: [], sum: 0, count: 0 };
-                } catch (error) {
-                    console.error('Error getting rating:', error);
-                    return { ratings: [], sum: 0, count: 0 };
-                }
-            },
-            
-            // Check if user already voted
-            hasVoted: function(talkId) {
-                return localStorage.getItem(`voted_${talkId}`) === 'true';
-            },
-            
-            // Mark as voted
-            markVoted: function(talkId) {
-                localStorage.setItem(`voted_${talkId}`, 'true');
-            }
+        // Firebase Configuration - REAL-TIME DATABASE (FREE!)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPRQxo8EQWxLtc8wHpT_F6vH1YxkJZQYk",
+            authDomain: "phd-retreat-2026.firebaseapp.com",
+            databaseURL: "https://phd-retreat-2026-default-rtdb.europe-west1.firebasedatabase.app/",
+            projectId: "phd-retreat-2026",
+            storageBucket: "phd-retreat-2026.firebasestorage.app",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abc123def456"
         };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
         // State
         let currentTalkId = null;
         let selectedRating = 0;
+        let autoRefreshInterval = null;
 
         // Navigation
         const navItems = document.querySelectorAll('.nav-item');
@@ -338,6 +317,12 @@
                 item.classList.add('active');
                 sections.forEach(s => s.classList.remove('active'));
                 document.getElementById(item.dataset.section).classList.add('active');
+                
+                // Stop auto-refresh when leaving admin
+                if (item.dataset.section !== 'admin' && autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
             });
         });
 
@@ -347,6 +332,11 @@
             sections.forEach(s => s.classList.remove('active'));
             document.getElementById('admin').classList.add('active');
             loadAdminData();
+            
+            // Auto-refresh every 5 seconds
+            if (!autoRefreshInterval) {
+                autoRefreshInterval = setInterval(loadAdminData, 5000);
+            }
         });
 
         document.getElementById('backBtn').addEventListener('click', () => {
@@ -356,6 +346,12 @@
             });
             sections.forEach(s => s.classList.remove('active'));
             document.getElementById('contact').classList.add('active');
+            
+            // Stop auto-refresh
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
         });
 
         // Rating modal
@@ -364,14 +360,17 @@
                 currentTalkId = item.dataset.talkId;
                 document.getElementById('modalTitle').textContent = item.dataset.talkName;
                 
-                if (RatingStorage.hasVoted(currentTalkId)) {
+                // Check if already voted (local storage)
+                if (localStorage.getItem(`voted_${currentTalkId}`)) {
                     document.getElementById('modalSubtitle').textContent = '✅ You already rated this session';
                     document.getElementById('submitBtn').disabled = true;
                     document.getElementById('submitBtn').textContent = 'Already Rated';
+                    document.getElementById('ratingDisplay').textContent = 'Already submitted';
                 } else {
                     document.getElementById('modalSubtitle').textContent = 'Select your rating (1-10 stars)';
                     document.getElementById('submitBtn').disabled = true;
                     document.getElementById('submitBtn').textContent = 'Submit Rating';
+                    document.getElementById('ratingDisplay').textContent = 'Select rating';
                 }
                 
                 resetStars();
@@ -382,22 +381,26 @@
         // Star interaction
         document.querySelectorAll('.star').forEach(star => {
             star.addEventListener('click', () => {
-                if (!RatingStorage.hasVoted(currentTalkId)) {
+                if (!localStorage.getItem(`voted_${currentTalkId}`)) {
                     selectedRating = parseInt(star.dataset.rating);
                     updateStars(selectedRating);
+                    updateRatingDisplay(selectedRating);
                     document.getElementById('submitBtn').disabled = false;
                 }
             });
             
             star.addEventListener('mouseenter', () => {
-                if (!RatingStorage.hasVoted(currentTalkId)) {
-                    updateStars(parseInt(star.dataset.rating));
+                if (!localStorage.getItem(`voted_${currentTalkId}`)) {
+                    const hoverRating = parseInt(star.dataset.rating);
+                    updateStars(hoverRating);
+                    updateRatingDisplay(hoverRating);
                 }
             });
         });
 
         document.querySelector('.star-rating').addEventListener('mouseleave', () => {
             updateStars(selectedRating);
+            updateRatingDisplay(selectedRating);
         });
 
         function updateStars(rating) {
@@ -406,9 +409,21 @@
             });
         }
 
+        function updateRatingDisplay(rating) {
+            const display = document.getElementById('ratingDisplay');
+            if (rating === 0) {
+                display.textContent = 'Select rating';
+                display.style.color = '#6b7280';
+            } else {
+                display.textContent = `${rating}/10`;
+                display.style.color = '#2563eb';
+            }
+        }
+
         function resetStars() {
             selectedRating = 0;
             updateStars(0);
+            updateRatingDisplay(0);
             document.getElementById('successMsg').style.display = 'none';
         }
 
@@ -417,16 +432,31 @@
             resetStars();
         }
 
-        // Submit rating
+        // Submit rating to Firebase
         function submitRating() {
             if (selectedRating === 0 || !currentTalkId) return;
             
-            // Save the rating
-            const success = RatingStorage.save(currentTalkId, selectedRating);
+            // Reference to this talk's ratings
+            const ratingsRef = database.ref('ratings/' + currentTalkId);
             
-            if (success) {
-                // Mark as voted
-                RatingStorage.markVoted(currentTalkId);
+            // Add the new rating
+            ratingsRef.transaction((current) => {
+                if (current === null) {
+                    return {
+                        sum: selectedRating,
+                        count: 1,
+                        ratings: [selectedRating]
+                    };
+                } else {
+                    return {
+                        sum: current.sum + selectedRating,
+                        count: current.count + 1,
+                        ratings: [...(current.ratings || []), selectedRating]
+                    };
+                }
+            }).then(() => {
+                // Mark as voted locally
+                localStorage.setItem(`voted_${currentTalkId}`, 'true');
                 
                 // Show success
                 document.getElementById('successMsg').style.display = 'block';
@@ -434,16 +464,16 @@
                 document.getElementById('submitBtn').textContent = 'Rating Submitted!';
                 
                 setTimeout(() => closeModal(), 1500);
-            } else {
+            }).catch((error) => {
+                console.error('Error submitting rating:', error);
                 alert('Error submitting rating. Please try again.');
-            }
+            });
         }
 
-        // Admin dashboard
+        // Load admin data from Firebase
         function loadAdminData() {
             const adminContent = document.getElementById('adminContent');
-            adminContent.innerHTML = '<p style="text-align:center; color:#6b7280; padding:2rem;">Loading ratings...</p>';
-
+            
             const sessions = [
                 { id: 'd1_s1', name: 'Day 1 - Session 1 (11:10)' },
                 { id: 'd1_s2', name: 'Day 1 - Session 2 (14:40)' },
@@ -452,58 +482,66 @@
                 { id: 'd2_s3', name: 'Day 2 - Session 5 (15:10)' }
             ];
 
-            let allRatings = [];
-            let totalVotes = 0;
-            let totalSum = 0;
+            // Get all ratings from Firebase
+            database.ref('ratings').once('value').then((snapshot) => {
+                const allData = snapshot.val() || {};
+                
+                let allRatings = [];
+                let totalVotes = 0;
+                let totalSum = 0;
 
-            sessions.forEach(session => {
-                const data = RatingStorage.get(session.id);
-                allRatings.push({
-                    name: session.name,
-                    average: data.count > 0 ? (data.sum / data.count).toFixed(1) : 0,
-                    count: data.count
+                sessions.forEach(session => {
+                    const data = allData[session.id] || { sum: 0, count: 0 };
+                    allRatings.push({
+                        name: session.name,
+                        average: data.count > 0 ? (data.sum / data.count).toFixed(1) : 0,
+                        count: data.count
+                    });
+                    totalVotes += data.count;
+                    totalSum += data.sum;
                 });
-                totalVotes += data.count;
-                totalSum += data.sum;
-            });
 
-            document.getElementById('totalVotes').textContent = totalVotes;
-            document.getElementById('avgRating').textContent = totalVotes > 0 ? (totalSum / totalVotes).toFixed(1) : '0.0';
+                document.getElementById('totalVotes').textContent = totalVotes;
+                document.getElementById('avgRating').textContent = totalVotes > 0 ? (totalSum / totalVotes).toFixed(1) : '0.0';
 
-            allRatings.sort((a, b) => parseFloat(b.average) - parseFloat(a.average));
+                allRatings.sort((a, b) => parseFloat(b.average) - parseFloat(a.average));
 
-            let html = '';
-            if (allRatings.some(r => r.count > 0)) {
-                allRatings.forEach((talk, index) => {
-                    const stars = '⭐'.repeat(Math.round(parseFloat(talk.average)));
-                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
-                    html += `
-                        <div class="rating-item">
-                            <h4>${medal} #${index + 1} ${talk.name}</h4>
-                            <div class="rating-stats">
-                                <div>
-                                    <div class="rating-score">${talk.average}/10</div>
-                                    <div style="color: #fbbf24; margin-top: 0.25rem;">${stars}</div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div style="font-size: 1.25rem; font-weight: 600; color: #6b7280;">${talk.count}</div>
-                                    <div style="font-size: 0.75rem; color: #9ca3af;">vote${talk.count !== 1 ? 's' : ''}</div>
+                let html = '';
+                if (allRatings.some(r => r.count > 0)) {
+                    allRatings.forEach((talk, index) => {
+                        const stars = '⭐'.repeat(Math.round(parseFloat(talk.average)));
+                        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                        html += `
+                            <div class="rating-item">
+                                <h4>${medal} #${index + 1} ${talk.name}</h4>
+                                <div class="rating-stats">
+                                    <div>
+                                        <div class="rating-score">${talk.average}/10</div>
+                                        <div style="color: #fbbf24; margin-top: 0.25rem;">${stars}</div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 1.25rem; font-weight: 600; color: #6b7280;">${talk.count}</div>
+                                        <div style="font-size: 0.75rem; color: #9ca3af;">vote${talk.count !== 1 ? 's' : ''}</div>
+                                    </div>
                                 </div>
                             </div>
+                        `;
+                    });
+                } else {
+                    html = `
+                        <div style="text-align:center; padding:3rem; color:#6b7280;">
+                            <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
+                            <h3 style="color:#1f2937; margin-bottom:0.5rem;">No Ratings Yet</h3>
+                            <p style="font-size:0.875rem;">Ratings will appear here once students start voting!</p>
                         </div>
                     `;
-                });
-            } else {
-                html = `
-                    <div style="text-align:center; padding:3rem; color:#6b7280;">
-                        <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
-                        <h3 style="color:#1f2937; margin-bottom:0.5rem;">No Ratings Yet</h3>
-                        <p style="font-size:0.875rem;">Ratings will appear here once students start voting!</p>
-                    </div>
-                `;
-            }
+                }
 
-            adminContent.innerHTML = html;
+                adminContent.innerHTML = html;
+            }).catch((error) => {
+                console.error('Error loading data:', error);
+                adminContent.innerHTML = '<p style="text-align:center; color:#ef4444; padding:2rem;">Error loading ratings. Please refresh.</p>';
+            });
         }
 
         // Close modal on background click
@@ -514,6 +552,13 @@
         // Close modal on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
         });
     </script>
 </body>
