@@ -231,7 +231,7 @@
             <section class="section" id="admin">
                 <div class="admin-header">
                     <h2>🎯 Admin Dashboard <span class="live-indicator"></span></h2>
-                    <p style="opacity:0.9; margin-top:0.25rem;">Live Ratings & Rankings (Auto-refreshing)</p>
+                    <p style="opacity:0.9; margin-top:0.25rem;">Live Ratings & Rankings (Real-Time Sync)</p>
                 </div>
                 
                 <div style="background: white; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
@@ -284,29 +284,31 @@
         </div>
     </div>
 
-    <!-- Firebase -->
-    <!-- Firebase -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // Firebase Configuration
+        // Firebase Configuration with YOUR database
         const firebaseConfig = {
-            apiKey: "AIzaSyDPRQxo8EQWxLtc8wHpT_F6vH1YxkJZQYk",
-            authDomain: "phd-retreat-2026.firebaseapp.com",
-            databaseURL: "https://phd-retreat-2026-default-rtdb.europe-west1.firebasedatabase.app/",
-            projectId: "phd-retreat-2026",
-            storageBucket: "phd-retreat-2026.firebasestorage.app",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abc123def456"
+            databaseURL: "https://phd-retreat-2026-default-rtdb.europe-west1.firebasedatabase.app"
         };
 
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // Test connection
+        database.ref('.info/connected').on('value', (snap) => {
+            if (snap.val() === true) {
+                console.log('✅ Connected to Firebase!');
+            } else {
+                console.log('❌ Disconnected from Firebase');
+            }
+        });
+
         let currentTalkId = null;
         let selectedRating = 0;
-        let autoRefreshInterval = null;
 
         // Navigation
         const navItems = document.querySelectorAll('.nav-item');
@@ -317,11 +319,6 @@
                 item.classList.add('active');
                 sections.forEach(s => s.classList.remove('active'));
                 document.getElementById(item.dataset.section).classList.add('active');
-                
-                if (item.dataset.section !== 'admin' && autoRefreshInterval) {
-                    clearInterval(autoRefreshInterval);
-                    autoRefreshInterval = null;
-                }
             });
         });
 
@@ -330,11 +327,7 @@
             navItems.forEach(n => n.classList.remove('active'));
             sections.forEach(s => s.classList.remove('active'));
             document.getElementById('admin').classList.add('active');
-            loadAdminData();
-            
-            if (!autoRefreshInterval) {
-                autoRefreshInterval = setInterval(loadAdminData, 5000);
-            }
+            setupRealtimeListener();
         });
 
         document.getElementById('backBtn').addEventListener('click', () => {
@@ -344,30 +337,22 @@
             });
             sections.forEach(s => s.classList.remove('active'));
             document.getElementById('contact').classList.add('active');
-            
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-            }
         });
 
-        // RESET BUTTON - Clear all data
+        // RESET ALL DATA - for testing
         function resetAllData() {
-            if (confirm('⚠️ WARNING: This will delete ALL ratings and reset all votes. Are you sure?')) {
-                if (confirm('Are you REALLY sure? This cannot be undone!')) {
-                    // Clear Firebase database
-                    database.ref('ratings').remove().then(() => {
-                        // Clear localStorage
-                        localStorage.clear();
-                        
-                        // Reload admin dashboard
-                        loadAdminData();
-                        
-                        alert('✅ All data has been cleared! You can now vote again on all devices.');
-                    }).catch((error) => {
-                        console.error('Error resetting data:', error);
-                        alert('Error resetting data. Please try again.');
-                    });
+            if (confirm('⚠️ WARNING: This will delete ALL ratings across ALL devices. Continue?')) {
+                if (confirm('Are you REALLY sure? This action cannot be undone!')) {
+                    database.ref('ratings').remove()
+                        .then(() => {
+                            localStorage.clear();
+                            alert('✅ All data has been reset! All devices can now vote again.');
+                            loadAdminData();
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            alert('Error resetting data: ' + error.message);
+                        });
                 }
             }
         }
@@ -449,6 +434,7 @@
             resetStars();
         }
 
+        // Submit rating to Firebase
         function submitRating() {
             if (selectedRating === 0 || !currentTalkId) return;
             
@@ -476,11 +462,19 @@
                 setTimeout(() => closeModal(), 1500);
             }).catch((error) => {
                 console.error('Error submitting rating:', error);
-                alert('Error submitting rating. Please try again.');
+                alert('Error submitting rating: ' + error.message);
             });
         }
 
-        function loadAdminData() {
+        // Setup real-time listener for admin dashboard
+        function setupRealtimeListener() {
+            database.ref('ratings').on('value', (snapshot) => {
+                loadAdminData(snapshot.val());
+            });
+        }
+
+        // Load admin data
+        function loadAdminData(data = null) {
             const adminContent = document.getElementById('adminContent');
             
             const sessions = [
@@ -491,79 +485,75 @@
                 { id: 'd2_s3', name: 'Day 2 - Session 5 (15:10)' }
             ];
 
-            database.ref('ratings').once('value').then((snapshot) => {
-                const allData = snapshot.val() || {};
-                
-                let allRatings = [];
-                let totalVotes = 0;
-                let totalSum = 0;
-
-                sessions.forEach(session => {
-                    const data = allData[session.id] || { sum: 0, count: 0 };
-                    allRatings.push({
-                        name: session.name,
-                        average: data.count > 0 ? (data.sum / data.count).toFixed(1) : 0,
-                        count: data.count
-                    });
-                    totalVotes += data.count;
-                    totalSum += data.sum;
+            if (data === null) {
+                database.ref('ratings').once('value').then((snapshot) => {
+                    loadAdminData(snapshot.val());
                 });
+                return;
+            }
 
-                document.getElementById('totalVotes').textContent = totalVotes;
-                document.getElementById('avgRating').textContent = totalVotes > 0 ? (totalSum / totalVotes).toFixed(1) : '0.0';
+            const allData = data || {};
+            let allRatings = [];
+            let totalVotes = 0;
+            let totalSum = 0;
 
-                allRatings.sort((a, b) => parseFloat(b.average) - parseFloat(a.average));
+            sessions.forEach(session => {
+                const sessionData = allData[session.id] || { sum: 0, count: 0 };
+                allRatings.push({
+                    name: session.name,
+                    average: sessionData.count > 0 ? (sessionData.sum / sessionData.count).toFixed(1) : 0,
+                    count: sessionData.count
+                });
+                totalVotes += sessionData.count;
+                totalSum += sessionData.sum;
+            });
 
-                let html = '';
-                if (allRatings.some(r => r.count > 0)) {
-                    allRatings.forEach((talk, index) => {
-                        const stars = '⭐'.repeat(Math.round(parseFloat(talk.average)));
-                        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
-                        html += `
-                            <div class="rating-item">
-                                <h4>${medal} #${index + 1} ${talk.name}</h4>
-                                <div class="rating-stats">
-                                    <div>
-                                        <div class="rating-score">${talk.average}/10</div>
-                                        <div style="color: #fbbf24; margin-top: 0.25rem;">${stars}</div>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <div style="font-size: 1.25rem; font-weight: 600; color: #6b7280;">${talk.count}</div>
-                                        <div style="font-size: 0.75rem; color: #9ca3af;">vote${talk.count !== 1 ? 's' : ''}</div>
-                                    </div>
+            document.getElementById('totalVotes').textContent = totalVotes;
+            document.getElementById('avgRating').textContent = totalVotes > 0 ? (totalSum / totalVotes).toFixed(1) : '0.0';
+
+            allRatings.sort((a, b) => parseFloat(b.average) - parseFloat(a.average));
+
+            let html = '';
+            if (allRatings.some(r => r.count > 0)) {
+                allRatings.forEach((talk, index) => {
+                    const stars = '⭐'.repeat(Math.round(parseFloat(talk.average)));
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                    html += `
+                        <div class="rating-item">
+                            <h4>${medal} #${index + 1} ${talk.name}</h4>
+                            <div class="rating-stats">
+                                <div>
+                                    <div class="rating-score">${talk.average}/10</div>
+                                    <div style="color: #fbbf24; margin-top: 0.25rem;">${stars}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 1.25rem; font-weight: 600; color: #6b7280;">${talk.count}</div>
+                                    <div style="font-size: 0.75rem; color: #9ca3af;">vote${talk.count !== 1 ? 's' : ''}</div>
                                 </div>
                             </div>
-                        `;
-                    });
-                } else {
-                    html = `
-                        <div style="text-align:center; padding:3rem; color:#6b7280;">
-                            <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
-                            <h3 style="color:#1f2937; margin-bottom:0.5rem;">No Ratings Yet</h3>
-                            <p style="font-size:0.875rem;">Ratings will appear here once students start voting!</p>
                         </div>
                     `;
-                }
+                });
+            } else {
+                html = `
+                    <div style="text-align:center; padding:3rem; color:#6b7280;">
+                        <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
+                        <h3 style="color:#1f2937; margin-bottom:0.5rem;">No Ratings Yet</h3>
+                        <p style="font-size:0.875rem;">Ratings will appear here in real-time once students start voting!</p>
+                    </div>
+                `;
+            }
 
-                adminContent.innerHTML = html;
-            }).catch((error) => {
-                console.error('Error loading data:', error);
-                adminContent.innerHTML = '<p style="text-align:center; color:#ef4444; padding:2rem;">Error loading ratings. Please refresh.</p>';
-            });
+            adminContent.innerHTML = html;
         }
 
+        // Close modal handlers
         document.getElementById('ratingModal').addEventListener('click', (e) => {
             if (e.target.id === 'ratingModal') closeModal();
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
-        });
-
-        window.addEventListener('beforeunload', () => {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-            }
         });
     </script>
 </body>
