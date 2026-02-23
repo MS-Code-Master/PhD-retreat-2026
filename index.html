@@ -231,7 +231,7 @@
             <section class="section" id="admin">
                 <div class="admin-header">
                     <h2>🎯 Admin Dashboard <span class="live-indicator"></span></h2>
-                    <p style="opacity:0.9; margin-top:0.25rem;">Live Ratings & Rankings (Real-Time Sync)</p>
+                    <p style="opacity:0.9; margin-top:0.25rem;">Live Ratings & Rankings</p>
                 </div>
                 
                 <div style="background: white; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
@@ -246,7 +246,7 @@
                 <div id="adminContent"></div>
 
                 <button class="btn btn-secondary" onclick="loadAdminData()" style="width:100%; margin-top:1rem;">🔄 Refresh Now</button>
-                <button class="btn btn-secondary" onclick="resetAllData()" style="width:100%; margin-top:0.5rem; background:#fef2f2; color:#dc2626; border:1px solid #fecaca;">🗑️ Reset All Data (Testing Only)</button>
+                <button class="btn btn-secondary" onclick="resetAllData()" style="width:100%; margin-top:0.5rem; background:#fef2f2; color:#dc2626; border:1px solid #fecaca;">🗑️ Reset All Data (Testing)</button>
                 <button class="btn btn-secondary" id="backBtn" style="width:100%; margin-top:0.5rem;">← Back to Contact</button>
             </section>
         </main>
@@ -285,12 +285,11 @@
     </div>
 
     <!-- Firebase SDK -->
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // Initialize Firebase with error handling
+        // Initialize Firebase
         let database = null;
         let firebaseInitialized = false;
 
@@ -301,10 +300,9 @@
             firebase.initializeApp(firebaseConfig);
             database = firebase.database();
             firebaseInitialized = true;
-            console.log('✅ Firebase initialized successfully');
+            console.log('✅ Firebase initialized');
         } catch (error) {
-            console.error('❌ Firebase initialization error:', error);
-            alert('Warning: Database connection failed. Using local storage only.');
+            console.error('❌ Firebase error:', error);
         }
 
         let currentTalkId = null;
@@ -329,14 +327,11 @@
             document.getElementById('admin').classList.add('active');
             loadAdminData();
             
-            // Setup real-time listener if Firebase is working
             if (firebaseInitialized && database) {
                 try {
-                    database.ref('ratings').on('value', (snapshot) => {
-                        loadAdminData();
-                    });
+                    database.ref('ratings').on('value', () => loadAdminData());
                 } catch (error) {
-                    console.error('Error setting up listener:', error);
+                    console.error('Listener error:', error);
                 }
             }
         });
@@ -346,45 +341,36 @@
                 n.classList.remove('active');
                 if (i === 3) n.classList.add('active');
             });
-            sections.forEach(s => s.classList.remove('active');
+            sections.forEach(s => s.classList.remove('active'));
             document.getElementById('contact').classList.add('active');
         });
 
         // RESET ALL DATA
         function resetAllData() {
-            console.log('Reset button clicked!');
-            
-            if (!confirm('⚠️ WARNING: Delete ALL ratings on ALL devices?')) {
-                return;
-            }
-            
-            if (!confirm('Are you REALLY sure? Cannot be undone!')) {
-                return;
-            }
+            if (!confirm('⚠️ Delete ALL ratings?')) return;
+            if (!confirm('Really? Cannot be undone!')) return;
 
-            // Clear localStorage first (always works)
             try {
                 localStorage.clear();
                 console.log('✅ localStorage cleared');
             } catch (error) {
-                console.error('Error clearing localStorage:', error);
+                console.error('localStorage error:', error);
             }
 
-            // Clear Firebase if available
             if (firebaseInitialized && database) {
                 database.ref('ratings').remove()
                     .then(() => {
-                        console.log('✅ Firebase data cleared');
-                        alert('✅ All data reset! All devices can vote again.');
+                        console.log('✅ Firebase cleared');
+                        alert('✅ All data reset!');
                         loadAdminData();
                     })
                     .catch((error) => {
-                        console.error('❌ Firebase error:', error);
-                        alert('Local data cleared, but Firebase error: ' + error.message);
+                        console.error('Firebase error:', error);
+                        alert('Local cleared, Firebase error: ' + error.message);
                         loadAdminData();
                     });
             } else {
-                alert('✅ Local data cleared! (Firebase not connected)');
+                alert('✅ Local data cleared!');
                 loadAdminData();
             }
         }
@@ -396,12 +382,12 @@
                 document.getElementById('modalTitle').textContent = item.dataset.talkName;
                 
                 if (localStorage.getItem(`voted_${currentTalkId}`)) {
-                    document.getElementById('modalSubtitle').textContent = '✅ You already rated this session';
+                    document.getElementById('modalSubtitle').textContent = '✅ You already rated';
                     document.getElementById('submitBtn').disabled = true;
                     document.getElementById('submitBtn').textContent = 'Already Rated';
                     document.getElementById('ratingDisplay').textContent = 'Already submitted';
                 } else {
-                    document.getElementById('modalSubtitle').textContent = 'Select your rating (1-10 stars)';
+                    document.getElementById('modalSubtitle').textContent = 'Select 1-10 stars';
                     document.getElementById('submitBtn').disabled = true;
                     document.getElementById('submitBtn').textContent = 'Submit Rating';
                     document.getElementById('ratingDisplay').textContent = 'Select rating';
@@ -425,9 +411,8 @@
             
             star.addEventListener('mouseenter', () => {
                 if (!localStorage.getItem(`voted_${currentTalkId}`)) {
-                    const hoverRating = parseInt(star.dataset.rating);
-                    updateStars(hoverRating);
-                    updateRatingDisplay(hoverRating);
+                    updateStars(parseInt(star.dataset.rating));
+                    updateRatingDisplay(parseInt(star.dataset.rating));
                 }
             });
         });
@@ -470,22 +455,12 @@
         function submitRating() {
             if (selectedRating === 0 || !currentTalkId) return;
             
-            console.log('Submitting rating:', selectedRating, 'for', currentTalkId);
-            
-            // Mark as voted locally
             localStorage.setItem(`voted_${currentTalkId}`, 'true');
             
-            // Try Firebase if available
             if (firebaseInitialized && database) {
-                const ratingsRef = database.ref('ratings/' + currentTalkId);
-                
-                ratingsRef.transaction((current) => {
+                database.ref('ratings/' + currentTalkId).transaction((current) => {
                     if (current === null) {
-                        return {
-                            sum: selectedRating,
-                            count: 1,
-                            ratings: [selectedRating]
-                        };
+                        return { sum: selectedRating, count: 1, ratings: [selectedRating] };
                     } else {
                         return {
                             sum: current.sum + selectedRating,
@@ -494,16 +469,13 @@
                         };
                     }
                 }).then(() => {
-                    console.log('✅ Rating saved to Firebase');
                     showSuccess();
                 }).catch((error) => {
-                    console.error('❌ Firebase error:', error);
-                    // Save to localStorage as fallback
+                    console.error('Firebase error:', error);
                     saveToLocalStorage(currentTalkId, selectedRating);
                     showSuccess();
                 });
             } else {
-                // No Firebase, use localStorage
                 saveToLocalStorage(currentTalkId, selectedRating);
                 showSuccess();
             }
@@ -514,13 +486,10 @@
                 const key = `rating_data_${talkId}`;
                 const existing = localStorage.getItem(key);
                 let data = existing ? JSON.parse(existing) : { sum: 0, count: 0, ratings: [] };
-                
                 data.sum += rating;
                 data.count += 1;
                 data.ratings.push(rating);
-                
                 localStorage.setItem(key, JSON.stringify(data));
-                console.log('✅ Rating saved to localStorage');
             } catch (error) {
                 console.error('localStorage error:', error);
             }
@@ -529,14 +498,14 @@
         function showSuccess() {
             document.getElementById('successMsg').style.display = 'block';
             document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = 'Rating Submitted!';
+            document.getElementById('submitBtn').textContent = 'Submitted!';
             setTimeout(() => closeModal(), 1500);
         }
 
         // Load admin data
         function loadAdminData() {
             const adminContent = document.getElementById('adminContent');
-            adminContent.innerHTML = '<p style="text-align:center; color:#6b7280; padding:2rem;">Loading...</p>';
+            adminContent.innerHTML = '<p style="text-align:center;color:#6b7280;padding:2rem;">Loading...</p>';
             
             const sessions = [
                 { id: 'd1_s1', name: 'Day 1 - Session 1 (11:10)' },
@@ -547,18 +516,15 @@
             ];
 
             if (firebaseInitialized && database) {
-                // Load from Firebase
                 database.ref('ratings').once('value')
                     .then((snapshot) => {
-                        const data = snapshot.val() || {};
-                        displayRatings(sessions, data);
+                        displayRatings(sessions, snapshot.val() || {});
                     })
                     .catch((error) => {
                         console.error('Firebase load error:', error);
                         loadFromLocalStorage(sessions);
                     });
             } else {
-                // Load from localStorage
                 loadFromLocalStorage(sessions);
             }
         }
@@ -568,11 +534,9 @@
             sessions.forEach(session => {
                 try {
                     const stored = localStorage.getItem(`rating_data_${session.id}`);
-                    if (stored) {
-                        data[session.id] = JSON.parse(stored);
-                    }
+                    if (stored) data[session.id] = JSON.parse(stored);
                 } catch (error) {
-                    console.error('Error loading from localStorage:', error);
+                    console.error('Error:', error);
                 }
             });
             displayRatings(sessions, data);
@@ -610,11 +574,11 @@
                             <div class="rating-stats">
                                 <div>
                                     <div class="rating-score">${talk.average}/10</div>
-                                    <div style="color: #fbbf24; margin-top: 0.25rem;">${stars}</div>
+                                    <div style="color:#fbbf24;margin-top:0.25rem;">${stars}</div>
                                 </div>
-                                <div style="text-align: right;">
-                                    <div style="font-size: 1.25rem; font-weight: 600; color: #6b7280;">${talk.count}</div>
-                                    <div style="font-size: 0.75rem; color: #9ca3af;">vote${talk.count !== 1 ? 's' : ''}</div>
+                                <div style="text-align:right;">
+                                    <div style="font-size:1.25rem;font-weight:600;color:#6b7280;">${talk.count}</div>
+                                    <div style="font-size:0.75rem;color:#9ca3af;">vote${talk.count !== 1 ? 's' : ''}</div>
                                 </div>
                             </div>
                         </div>
@@ -622,10 +586,10 @@
                 });
             } else {
                 html = `
-                    <div style="text-align:center; padding:3rem; color:#6b7280;">
-                        <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
-                        <h3 style="color:#1f2937; margin-bottom:0.5rem;">No Ratings Yet</h3>
-                        <p style="font-size:0.875rem;">Ratings will appear here once students start voting!</p>
+                    <div style="text-align:center;padding:3rem;color:#6b7280;">
+                        <div style="font-size:3rem;margin-bottom:1rem;">📊</div>
+                        <h3 style="color:#1f2937;margin-bottom:0.5rem;">No Ratings Yet</h3>
+                        <p style="font-size:0.875rem;">Start voting to see results!</p>
                     </div>
                 `;
             }
@@ -633,7 +597,7 @@
             document.getElementById('adminContent').innerHTML = html;
         }
 
-        // Modal close handlers
+        // Modal close
         document.getElementById('ratingModal').addEventListener('click', (e) => {
             if (e.target.id === 'ratingModal') closeModal();
         });
@@ -642,9 +606,7 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // Debug: Log when page loads
-        console.log('App loaded successfully');
-        console.log('Firebase initialized:', firebaseInitialized);
+        console.log('App loaded, Firebase:', firebaseInitialized);
     </script>
 </body>
 </html>
