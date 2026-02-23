@@ -246,6 +246,7 @@
                 <div id="adminContent"></div>
 
                 <button class="btn btn-secondary" onclick="loadAdminData()" style="width:100%; margin-top:1rem;">🔄 Refresh Now</button>
+                <button class="btn btn-secondary" onclick="resetAllData()" style="width:100%; margin-top:0.5rem; background:#fef2f2; color:#dc2626; border:1px solid #fecaca;">🗑️ Reset All Data (Testing Only)</button>
                 <button class="btn btn-secondary" id="backBtn" style="width:100%; margin-top:0.5rem;">← Back to Contact</button>
             </section>
         </main>
@@ -284,11 +285,12 @@
     </div>
 
     <!-- Firebase -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // Firebase Configuration - REAL-TIME DATABASE (FREE!)
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDPRQxo8EQWxLtc8wHpT_F6vH1YxkJZQYk",
             authDomain: "phd-retreat-2026.firebaseapp.com",
@@ -299,11 +301,9 @@
             appId: "1:123456789:web:abc123def456"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // State
         let currentTalkId = null;
         let selectedRating = 0;
         let autoRefreshInterval = null;
@@ -318,7 +318,6 @@
                 sections.forEach(s => s.classList.remove('active'));
                 document.getElementById(item.dataset.section).classList.add('active');
                 
-                // Stop auto-refresh when leaving admin
                 if (item.dataset.section !== 'admin' && autoRefreshInterval) {
                     clearInterval(autoRefreshInterval);
                     autoRefreshInterval = null;
@@ -333,7 +332,6 @@
             document.getElementById('admin').classList.add('active');
             loadAdminData();
             
-            // Auto-refresh every 5 seconds
             if (!autoRefreshInterval) {
                 autoRefreshInterval = setInterval(loadAdminData, 5000);
             }
@@ -347,12 +345,32 @@
             sections.forEach(s => s.classList.remove('active'));
             document.getElementById('contact').classList.add('active');
             
-            // Stop auto-refresh
             if (autoRefreshInterval) {
                 clearInterval(autoRefreshInterval);
                 autoRefreshInterval = null;
             }
         });
+
+        // RESET BUTTON - Clear all data
+        function resetAllData() {
+            if (confirm('⚠️ WARNING: This will delete ALL ratings and reset all votes. Are you sure?')) {
+                if (confirm('Are you REALLY sure? This cannot be undone!')) {
+                    // Clear Firebase database
+                    database.ref('ratings').remove().then(() => {
+                        // Clear localStorage
+                        localStorage.clear();
+                        
+                        // Reload admin dashboard
+                        loadAdminData();
+                        
+                        alert('✅ All data has been cleared! You can now vote again on all devices.');
+                    }).catch((error) => {
+                        console.error('Error resetting data:', error);
+                        alert('Error resetting data. Please try again.');
+                    });
+                }
+            }
+        }
 
         // Rating modal
         document.querySelectorAll('.rateable').forEach(item => {
@@ -360,7 +378,6 @@
                 currentTalkId = item.dataset.talkId;
                 document.getElementById('modalTitle').textContent = item.dataset.talkName;
                 
-                // Check if already voted (local storage)
                 if (localStorage.getItem(`voted_${currentTalkId}`)) {
                     document.getElementById('modalSubtitle').textContent = '✅ You already rated this session';
                     document.getElementById('submitBtn').disabled = true;
@@ -432,14 +449,11 @@
             resetStars();
         }
 
-        // Submit rating to Firebase
         function submitRating() {
             if (selectedRating === 0 || !currentTalkId) return;
             
-            // Reference to this talk's ratings
             const ratingsRef = database.ref('ratings/' + currentTalkId);
             
-            // Add the new rating
             ratingsRef.transaction((current) => {
                 if (current === null) {
                     return {
@@ -455,14 +469,10 @@
                     };
                 }
             }).then(() => {
-                // Mark as voted locally
                 localStorage.setItem(`voted_${currentTalkId}`, 'true');
-                
-                // Show success
                 document.getElementById('successMsg').style.display = 'block';
                 document.getElementById('submitBtn').disabled = true;
                 document.getElementById('submitBtn').textContent = 'Rating Submitted!';
-                
                 setTimeout(() => closeModal(), 1500);
             }).catch((error) => {
                 console.error('Error submitting rating:', error);
@@ -470,7 +480,6 @@
             });
         }
 
-        // Load admin data from Firebase
         function loadAdminData() {
             const adminContent = document.getElementById('adminContent');
             
@@ -482,7 +491,6 @@
                 { id: 'd2_s3', name: 'Day 2 - Session 5 (15:10)' }
             ];
 
-            // Get all ratings from Firebase
             database.ref('ratings').once('value').then((snapshot) => {
                 const allData = snapshot.val() || {};
                 
@@ -544,17 +552,14 @@
             });
         }
 
-        // Close modal on background click
         document.getElementById('ratingModal').addEventListener('click', (e) => {
             if (e.target.id === 'ratingModal') closeModal();
         });
 
-        // Close modal on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
 
-        // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             if (autoRefreshInterval) {
                 clearInterval(autoRefreshInterval);
