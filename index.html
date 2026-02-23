@@ -285,27 +285,27 @@
     </div>
 
     <!-- Firebase SDK -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // Firebase Configuration with YOUR database
-        const firebaseConfig = {
-            databaseURL: "https://phd-retreat-2026-default-rtdb.europe-west1.firebasedatabase.app"
-        };
+        // Initialize Firebase with error handling
+        let database = null;
+        let firebaseInitialized = false;
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // Test connection
-        database.ref('.info/connected').on('value', (snap) => {
-            if (snap.val() === true) {
-                console.log('✅ Connected to Firebase!');
-            } else {
-                console.log('❌ Disconnected from Firebase');
-            }
-        });
+        try {
+            const firebaseConfig = {
+                databaseURL: "https://phd-retreat-2026-default-rtdb.europe-west1.firebasedatabase.app"
+            };
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            firebaseInitialized = true;
+            console.log('✅ Firebase initialized successfully');
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+            alert('Warning: Database connection failed. Using local storage only.');
+        }
 
         let currentTalkId = null;
         let selectedRating = 0;
@@ -327,7 +327,18 @@
             navItems.forEach(n => n.classList.remove('active'));
             sections.forEach(s => s.classList.remove('active'));
             document.getElementById('admin').classList.add('active');
-            setupRealtimeListener();
+            loadAdminData();
+            
+            // Setup real-time listener if Firebase is working
+            if (firebaseInitialized && database) {
+                try {
+                    database.ref('ratings').on('value', (snapshot) => {
+                        loadAdminData();
+                    });
+                } catch (error) {
+                    console.error('Error setting up listener:', error);
+                }
+            }
         });
 
         document.getElementById('backBtn').addEventListener('click', () => {
@@ -335,25 +346,46 @@
                 n.classList.remove('active');
                 if (i === 3) n.classList.add('active');
             });
-            sections.forEach(s => s.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active');
             document.getElementById('contact').classList.add('active');
         });
 
-        // RESET ALL DATA - for testing
+        // RESET ALL DATA
         function resetAllData() {
-            if (confirm('⚠️ WARNING: This will delete ALL ratings across ALL devices. Continue?')) {
-                if (confirm('Are you REALLY sure? This action cannot be undone!')) {
-                    database.ref('ratings').remove()
-                        .then(() => {
-                            localStorage.clear();
-                            alert('✅ All data has been reset! All devices can now vote again.');
-                            loadAdminData();
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                            alert('Error resetting data: ' + error.message);
-                        });
-                }
+            console.log('Reset button clicked!');
+            
+            if (!confirm('⚠️ WARNING: Delete ALL ratings on ALL devices?')) {
+                return;
+            }
+            
+            if (!confirm('Are you REALLY sure? Cannot be undone!')) {
+                return;
+            }
+
+            // Clear localStorage first (always works)
+            try {
+                localStorage.clear();
+                console.log('✅ localStorage cleared');
+            } catch (error) {
+                console.error('Error clearing localStorage:', error);
+            }
+
+            // Clear Firebase if available
+            if (firebaseInitialized && database) {
+                database.ref('ratings').remove()
+                    .then(() => {
+                        console.log('✅ Firebase data cleared');
+                        alert('✅ All data reset! All devices can vote again.');
+                        loadAdminData();
+                    })
+                    .catch((error) => {
+                        console.error('❌ Firebase error:', error);
+                        alert('Local data cleared, but Firebase error: ' + error.message);
+                        loadAdminData();
+                    });
+            } else {
+                alert('✅ Local data cleared! (Firebase not connected)');
+                loadAdminData();
             }
         }
 
@@ -434,48 +466,77 @@
             resetStars();
         }
 
-        // Submit rating to Firebase
+        // Submit rating
         function submitRating() {
             if (selectedRating === 0 || !currentTalkId) return;
             
-            const ratingsRef = database.ref('ratings/' + currentTalkId);
+            console.log('Submitting rating:', selectedRating, 'for', currentTalkId);
             
-            ratingsRef.transaction((current) => {
-                if (current === null) {
-                    return {
-                        sum: selectedRating,
-                        count: 1,
-                        ratings: [selectedRating]
-                    };
-                } else {
-                    return {
-                        sum: current.sum + selectedRating,
-                        count: current.count + 1,
-                        ratings: [...(current.ratings || []), selectedRating]
-                    };
-                }
-            }).then(() => {
-                localStorage.setItem(`voted_${currentTalkId}`, 'true');
-                document.getElementById('successMsg').style.display = 'block';
-                document.getElementById('submitBtn').disabled = true;
-                document.getElementById('submitBtn').textContent = 'Rating Submitted!';
-                setTimeout(() => closeModal(), 1500);
-            }).catch((error) => {
-                console.error('Error submitting rating:', error);
-                alert('Error submitting rating: ' + error.message);
-            });
+            // Mark as voted locally
+            localStorage.setItem(`voted_${currentTalkId}`, 'true');
+            
+            // Try Firebase if available
+            if (firebaseInitialized && database) {
+                const ratingsRef = database.ref('ratings/' + currentTalkId);
+                
+                ratingsRef.transaction((current) => {
+                    if (current === null) {
+                        return {
+                            sum: selectedRating,
+                            count: 1,
+                            ratings: [selectedRating]
+                        };
+                    } else {
+                        return {
+                            sum: current.sum + selectedRating,
+                            count: current.count + 1,
+                            ratings: [...(current.ratings || []), selectedRating]
+                        };
+                    }
+                }).then(() => {
+                    console.log('✅ Rating saved to Firebase');
+                    showSuccess();
+                }).catch((error) => {
+                    console.error('❌ Firebase error:', error);
+                    // Save to localStorage as fallback
+                    saveToLocalStorage(currentTalkId, selectedRating);
+                    showSuccess();
+                });
+            } else {
+                // No Firebase, use localStorage
+                saveToLocalStorage(currentTalkId, selectedRating);
+                showSuccess();
+            }
         }
 
-        // Setup real-time listener for admin dashboard
-        function setupRealtimeListener() {
-            database.ref('ratings').on('value', (snapshot) => {
-                loadAdminData(snapshot.val());
-            });
+        function saveToLocalStorage(talkId, rating) {
+            try {
+                const key = `rating_data_${talkId}`;
+                const existing = localStorage.getItem(key);
+                let data = existing ? JSON.parse(existing) : { sum: 0, count: 0, ratings: [] };
+                
+                data.sum += rating;
+                data.count += 1;
+                data.ratings.push(rating);
+                
+                localStorage.setItem(key, JSON.stringify(data));
+                console.log('✅ Rating saved to localStorage');
+            } catch (error) {
+                console.error('localStorage error:', error);
+            }
+        }
+
+        function showSuccess() {
+            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = 'Rating Submitted!';
+            setTimeout(() => closeModal(), 1500);
         }
 
         // Load admin data
-        function loadAdminData(data = null) {
+        function loadAdminData() {
             const adminContent = document.getElementById('adminContent');
+            adminContent.innerHTML = '<p style="text-align:center; color:#6b7280; padding:2rem;">Loading...</p>';
             
             const sessions = [
                 { id: 'd1_s1', name: 'Day 1 - Session 1 (11:10)' },
@@ -485,20 +546,45 @@
                 { id: 'd2_s3', name: 'Day 2 - Session 5 (15:10)' }
             ];
 
-            if (data === null) {
-                database.ref('ratings').once('value').then((snapshot) => {
-                    loadAdminData(snapshot.val());
-                });
-                return;
+            if (firebaseInitialized && database) {
+                // Load from Firebase
+                database.ref('ratings').once('value')
+                    .then((snapshot) => {
+                        const data = snapshot.val() || {};
+                        displayRatings(sessions, data);
+                    })
+                    .catch((error) => {
+                        console.error('Firebase load error:', error);
+                        loadFromLocalStorage(sessions);
+                    });
+            } else {
+                // Load from localStorage
+                loadFromLocalStorage(sessions);
             }
+        }
 
-            const allData = data || {};
+        function loadFromLocalStorage(sessions) {
+            const data = {};
+            sessions.forEach(session => {
+                try {
+                    const stored = localStorage.getItem(`rating_data_${session.id}`);
+                    if (stored) {
+                        data[session.id] = JSON.parse(stored);
+                    }
+                } catch (error) {
+                    console.error('Error loading from localStorage:', error);
+                }
+            });
+            displayRatings(sessions, data);
+        }
+
+        function displayRatings(sessions, data) {
             let allRatings = [];
             let totalVotes = 0;
             let totalSum = 0;
 
             sessions.forEach(session => {
-                const sessionData = allData[session.id] || { sum: 0, count: 0 };
+                const sessionData = data[session.id] || { sum: 0, count: 0 };
                 allRatings.push({
                     name: session.name,
                     average: sessionData.count > 0 ? (sessionData.sum / sessionData.count).toFixed(1) : 0,
@@ -539,15 +625,15 @@
                     <div style="text-align:center; padding:3rem; color:#6b7280;">
                         <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
                         <h3 style="color:#1f2937; margin-bottom:0.5rem;">No Ratings Yet</h3>
-                        <p style="font-size:0.875rem;">Ratings will appear here in real-time once students start voting!</p>
+                        <p style="font-size:0.875rem;">Ratings will appear here once students start voting!</p>
                     </div>
                 `;
             }
 
-            adminContent.innerHTML = html;
+            document.getElementById('adminContent').innerHTML = html;
         }
 
-        // Close modal handlers
+        // Modal close handlers
         document.getElementById('ratingModal').addEventListener('click', (e) => {
             if (e.target.id === 'ratingModal') closeModal();
         });
@@ -555,6 +641,10 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
+
+        // Debug: Log when page loads
+        console.log('App loaded successfully');
+        console.log('Firebase initialized:', firebaseInitialized);
     </script>
 </body>
 </html>
