@@ -278,6 +278,53 @@
     </div>
 
     <script>
+        // Storage Helper - Works with localStorage (GitHub Pages compatible)
+        const RatingStorage = {
+            // Save rating
+            save: function(talkId, rating) {
+                try {
+                    // Get existing ratings for this talk
+                    const key = `retreat_ratings_${talkId}`;
+                    const existing = localStorage.getItem(key);
+                    let data = existing ? JSON.parse(existing) : { ratings: [], sum: 0, count: 0 };
+                    
+                    // Add new rating
+                    data.ratings.push(rating);
+                    data.sum += rating;
+                    data.count += 1;
+                    
+                    // Save back
+                    localStorage.setItem(key, JSON.stringify(data));
+                    return true;
+                } catch (error) {
+                    console.error('Error saving rating:', error);
+                    return false;
+                }
+            },
+            
+            // Get ratings for a talk
+            get: function(talkId) {
+                try {
+                    const key = `retreat_ratings_${talkId}`;
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : { ratings: [], sum: 0, count: 0 };
+                } catch (error) {
+                    console.error('Error getting rating:', error);
+                    return { ratings: [], sum: 0, count: 0 };
+                }
+            },
+            
+            // Check if user already voted
+            hasVoted: function(talkId) {
+                return localStorage.getItem(`voted_${talkId}`) === 'true';
+            },
+            
+            // Mark as voted
+            markVoted: function(talkId) {
+                localStorage.setItem(`voted_${talkId}`, 'true');
+            }
+        };
+
         // State
         let currentTalkId = null;
         let selectedRating = 0;
@@ -317,7 +364,7 @@
                 currentTalkId = item.dataset.talkId;
                 document.getElementById('modalTitle').textContent = item.dataset.talkName;
                 
-                if (localStorage.getItem(`voted_${currentTalkId}`)) {
+                if (RatingStorage.hasVoted(currentTalkId)) {
                     document.getElementById('modalSubtitle').textContent = '✅ You already rated this session';
                     document.getElementById('submitBtn').disabled = true;
                     document.getElementById('submitBtn').textContent = 'Already Rated';
@@ -335,7 +382,7 @@
         // Star interaction
         document.querySelectorAll('.star').forEach(star => {
             star.addEventListener('click', () => {
-                if (!localStorage.getItem(`voted_${currentTalkId}`)) {
+                if (!RatingStorage.hasVoted(currentTalkId)) {
                     selectedRating = parseInt(star.dataset.rating);
                     updateStars(selectedRating);
                     document.getElementById('submitBtn').disabled = false;
@@ -343,7 +390,7 @@
             });
             
             star.addEventListener('mouseenter', () => {
-                if (!localStorage.getItem(`voted_${currentTalkId}`)) {
+                if (!RatingStorage.hasVoted(currentTalkId)) {
                     updateStars(parseInt(star.dataset.rating));
                 }
             });
@@ -371,33 +418,29 @@
         }
 
         // Submit rating
-        async function submitRating() {
+        function submitRating() {
             if (selectedRating === 0 || !currentTalkId) return;
             
-            try {
-                const result = await window.storage.get(`ratings_${currentTalkId}`, true);
-                let data = result ? JSON.parse(result.value) : { ratings: [], sum: 0, count: 0 };
+            // Save the rating
+            const success = RatingStorage.save(currentTalkId, selectedRating);
+            
+            if (success) {
+                // Mark as voted
+                RatingStorage.markVoted(currentTalkId);
                 
-                data.ratings.push(selectedRating);
-                data.sum += selectedRating;
-                data.count += 1;
-                
-                await window.storage.set(`ratings_${currentTalkId}`, JSON.stringify(data), true);
-                localStorage.setItem(`voted_${currentTalkId}`, 'true');
-                
+                // Show success
                 document.getElementById('successMsg').style.display = 'block';
                 document.getElementById('submitBtn').disabled = true;
                 document.getElementById('submitBtn').textContent = 'Rating Submitted!';
                 
                 setTimeout(() => closeModal(), 1500);
-            } catch (error) {
-                console.error('Error submitting rating:', error);
+            } else {
                 alert('Error submitting rating. Please try again.');
             }
         }
 
         // Admin dashboard
-        async function loadAdminData() {
+        function loadAdminData() {
             const adminContent = document.getElementById('adminContent');
             adminContent.innerHTML = '<p style="text-align:center; color:#6b7280; padding:2rem;">Loading ratings...</p>';
 
@@ -413,26 +456,16 @@
             let totalVotes = 0;
             let totalSum = 0;
 
-            for (let session of sessions) {
-                try {
-                    const result = await window.storage.get(`ratings_${session.id}`, true);
-                    if (result) {
-                        const data = JSON.parse(result.value);
-                        allRatings.push({
-                            name: session.name,
-                            average: (data.sum / data.count).toFixed(1),
-                            count: data.count
-                        });
-                        totalVotes += data.count;
-                        totalSum += data.sum;
-                    } else {
-                        allRatings.push({ name: session.name, average: 0, count: 0 });
-                    }
-                } catch (error) {
-                    console.error('Error loading:', session.id, error);
-                    allRatings.push({ name: session.name, average: 0, count: 0 });
-                }
-            }
+            sessions.forEach(session => {
+                const data = RatingStorage.get(session.id);
+                allRatings.push({
+                    name: session.name,
+                    average: data.count > 0 ? (data.sum / data.count).toFixed(1) : 0,
+                    count: data.count
+                });
+                totalVotes += data.count;
+                totalSum += data.sum;
+            });
 
             document.getElementById('totalVotes').textContent = totalVotes;
             document.getElementById('avgRating').textContent = totalVotes > 0 ? (totalSum / totalVotes).toFixed(1) : '0.0';
