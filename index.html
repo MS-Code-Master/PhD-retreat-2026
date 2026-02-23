@@ -14,10 +14,9 @@
         .header { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 1.5rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
         .header p { opacity: 0.95; font-size: 1rem; }
-        .nav { display: flex; overflow-x: auto; background: white; border-bottom: 1px solid #e5e7eb; -webkit-overflow-scrolling: touch; }
+        .nav { display: flex; overflow-x: auto; background: white; border-bottom: 1px solid #e5e7eb; }
         .nav-item { flex-shrink: 0; padding: 1rem 1.5rem; background: none; border: none; font-size: 0.875rem; font-weight: 500; color: #6b7280; cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; }
         .nav-item.active { color: #2563eb; border-bottom-color: #2563eb; }
-        .nav-item:hover { color: #2563eb; background: #f8fafc; }
         .content { padding: 1rem; }
         .section { display: none; }
         .section.active { display: block; }
@@ -25,6 +24,9 @@
         .day-header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem; font-weight: 600; }
         .agenda-item { padding: 1rem; border-bottom: 1px solid #f3f4f6; display: flex; gap: 1rem; }
         .agenda-item:last-child { border-bottom: none; }
+        .agenda-item.rateable { cursor: pointer; background: linear-gradient(90deg, #ffffff 0%, #f8fafc 100%); transition: all 0.3s; }
+        .agenda-item.rateable:hover { background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 100%); transform: translateX(4px); }
+        .agenda-item.rateable .agenda-content h3::after { content: " 🎤"; }
         .time { flex-shrink: 0; font-weight: 600; color: #2563eb; font-size: 0.875rem; width: 5rem; }
         .agenda-content h3 { font-weight: 600; margin-bottom: 0.25rem; color: #1f2937; font-size: 0.95rem; }
         .agenda-content p { color: #6b7280; font-size: 0.875rem; }
@@ -41,6 +43,36 @@
         .stat-box { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 1rem; border-radius: 0.5rem; text-align: center; border: 1px solid #bfdbfe; }
         .stat-number { font-size: 1.5rem; font-weight: 700; color: #1e40af; }
         .stat-label { font-size: 0.75rem; color: #3b82f6; margin-top: 0.25rem; }
+        
+        /* Rating Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { background: white; border-radius: 1rem; padding: 2rem; max-width: 90%; width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header h2 { color: #1f2937; font-size: 1.25rem; margin-bottom: 0.5rem; text-align: center; }
+        .modal-header p { color: #6b7280; font-size: 0.875rem; text-align: center; margin-bottom: 1.5rem; }
+        .star-rating { display: flex; justify-content: center; gap: 0.5rem; margin: 2rem 0; flex-wrap: wrap; }
+        .star { font-size: 2rem; cursor: pointer; transition: all 0.2s; color: #d1d5db; user-select: none; }
+        .star:hover, .star.active { color: #fbbf24; transform: scale(1.2); }
+        .modal-buttons { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+        .btn { flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+        .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
+        .btn-secondary { background: #e5e7eb; color: #1f2937; }
+        .btn-secondary:hover { background: #d1d5db; }
+        .success-msg { background: #d1fae5; color: #065f46; padding: 0.75rem; border-radius: 0.5rem; text-align: center; margin-top: 1rem; font-size: 0.875rem; display: none; }
+        
+        /* Admin Dashboard */
+        .admin-btn { background: transparent; border: 2px dashed #e5e7eb; color: #9ca3af; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.75rem; cursor: pointer; margin-top: 1rem; width: 100%; }
+        .admin-btn:hover { border-color: #2563eb; color: #2563eb; }
+        .admin-header { background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; text-align: center; }
+        .rating-item { background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 0.75rem; }
+        .rating-item h4 { color: #1f2937; margin-bottom: 0.75rem; }
+        .rating-stats { display: flex; justify-content: space-between; align-items: center; }
+        .rating-score { font-size: 1.75rem; font-weight: 700; color: #2563eb; }
+        
         @media (min-width: 640px) { .container { max-width: 28rem; margin: 0 auto; box-shadow: 0 0 0 1px rgba(0,0,0,0.05); } }
     </style>
 </head>
@@ -66,10 +98,10 @@
                     <div class="agenda-item"><div class="time">09:30</div><div class="agenda-content"><h3>Arrival + Registration</h3><p>Welcome coffee</p></div></div>
                     <div class="agenda-item"><div class="time">10:25</div><div class="agenda-content"><h3>Welcome</h3><p>Opening remarks</p></div></div>
                     <div class="agenda-item"><div class="time">10:30</div><div class="agenda-content"><h3>Speaker 1</h3><p>Prof. Dr. Eva Ringler</p></div></div>
-                    <div class="agenda-item"><div class="time">11:10</div><div class="agenda-content"><h3>Student Talks</h3><p>3 talks + 3 flash talks</p></div></div>
+                    <div class="agenda-item rateable" data-talk-id="d1_s1" data-talk-name="Day 1 - Session 1 (11:10)"><div class="time">11:10</div><div class="agenda-content"><h3>Student Talks (Session 1)</h3><p>3 talks + 3 flash talks - Click to rate!</p></div></div>
                     <div class="agenda-item"><div class="time">12:30</div><div class="agenda-content"><h3>Lunch + Check-in</h3></div></div>
                     <div class="agenda-item"><div class="time">14:00</div><div class="agenda-content"><h3>Speaker 2</h3><p>Prof. Dr. Andrew Charles Oates</p></div></div>
-                    <div class="agenda-item"><div class="time">14:40</div><div class="agenda-content"><h3>Student Talks</h3><p>3 talks + 3 flash talks</p></div></div>
+                    <div class="agenda-item rateable" data-talk-id="d1_s2" data-talk-name="Day 1 - Session 2 (14:40)"><div class="time">14:40</div><div class="agenda-content"><h3>Student Talks (Session 2)</h3><p>3 talks + 3 flash talks - Click to rate!</p></div></div>
                     <div class="agenda-item"><div class="time">16:00</div><div class="agenda-content"><h3>Team Building</h3></div></div>
                     <div class="agenda-item"><div class="time">18:00</div><div class="agenda-content"><h3>Poster Session I + Apero</h3></div></div>
                     <div class="agenda-item"><div class="time">20:00</div><div class="agenda-content"><h3>Dinner + Social</h3></div></div>
@@ -79,13 +111,13 @@
                     <div class="day-header">Day 2 - Thursday, March 19, 2026</div>
                     <div class="agenda-item"><div class="time">07:00</div><div class="agenda-content"><h3>Breakfast</h3></div></div>
                     <div class="agenda-item"><div class="time">09:00</div><div class="agenda-content"><h3>Speaker 3</h3><p>Dr. Mathilda Fatton</p></div></div>
-                    <div class="agenda-item"><div class="time">09:40</div><div class="agenda-content"><h3>Student Talks</h3><p>3 talks</p></div></div>
+                    <div class="agenda-item rateable" data-talk-id="d2_s1" data-talk-name="Day 2 - Session 3 (09:40)"><div class="time">09:40</div><div class="agenda-content"><h3>Student Talks (Session 3)</h3><p>3 talks - Click to rate!</p></div></div>
                     <div class="agenda-item"><div class="time">10:40</div><div class="agenda-content"><h3>Coffee Break</h3></div></div>
-                    <div class="agenda-item"><div class="time">11:00</div><div class="agenda-content"><h3>Student Talks</h3><p>4 talks + 2 flash talks</p></div></div>
+                    <div class="agenda-item rateable" data-talk-id="d2_s2" data-talk-name="Day 2 - Session 4 (11:00)"><div class="time">11:00</div><div class="agenda-content"><h3>Student Talks (Session 4)</h3><p>4 talks + 2 flash talks - Click to rate!</p></div></div>
                     <div class="agenda-item"><div class="time">12:30</div><div class="agenda-content"><h3>Lunch</h3></div></div>
                     <div class="agenda-item"><div class="time">14:00</div><div class="agenda-content"><h3>Sponsor Talks</h3></div></div>
                     <div class="agenda-item"><div class="time">14:30</div><div class="agenda-content"><h3>Speaker 4</h3><p>Prof. Dr. Michael N. Hall</p></div></div>
-                    <div class="agenda-item"><div class="time">15:10</div><div class="agenda-content"><h3>Student Talks</h3><p>3 talks + 2 flash talks</p></div></div>
+                    <div class="agenda-item rateable" data-talk-id="d2_s3" data-talk-name="Day 2 - Session 5 (15:10)"><div class="time">15:10</div><div class="agenda-content"><h3>Student Talks (Session 5)</h3><p>3 talks + 2 flash talks - Click to rate!</p></div></div>
                     <div class="agenda-item"><div class="time">17:00</div><div class="agenda-content"><h3>Poster Session II + Apero</h3></div></div>
                     <div class="agenda-item"><div class="time">18:30</div><div class="agenda-content"><h3>Free Time</h3></div></div>
                     <div class="agenda-item"><div class="time">19:30</div><div class="agenda-content"><h3>Dinner + Party</h3></div></div>
@@ -188,11 +220,69 @@
                     <h3>⚠️ Note</h3>
                     <p style="font-style:italic;">Provisional schedule subject to change</p>
                 </div>
+
+                <button class="admin-btn" id="adminBtn">⚙️ Admin Dashboard (Rating System)</button>
+            </section>
+
+            <section class="section" id="admin">
+                <div class="admin-header">
+                    <h2>🎯 Admin Dashboard</h2>
+                    <p style="opacity:0.9; margin-top:0.25rem;">Live Ratings & Rankings</p>
+                </div>
+                
+                <div style="background: white; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+                    <h3 style="color: #1f2937; font-size: 0.95rem; margin-bottom: 0.75rem;">📊 Overview</h3>
+                    <div class="stats-grid">
+                        <div class="stat-box"><div class="stat-number" id="totalVotes">0</div><div class="stat-label">Total Votes</div></div>
+                        <div class="stat-box"><div class="stat-number" id="avgRating">0.0</div><div class="stat-label">Avg Rating</div></div>
+                    </div>
+                </div>
+
+                <h3 style="color: #1f2937; margin-bottom: 1rem;">🏆 Session Rankings</h3>
+                <div id="adminContent"></div>
+
+                <button class="btn btn-secondary" onclick="loadAdminData()" style="width:100%; margin-top:1rem;">🔄 Refresh Data</button>
+                <button class="btn btn-secondary" id="backBtn" style="width:100%; margin-top:0.5rem;">← Back to Contact</button>
             </section>
         </main>
     </div>
 
+    <!-- Rating Modal -->
+    <div class="modal" id="ratingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Rate This Session</h2>
+                <p id="modalSubtitle">Select your rating (1-10 stars)</p>
+            </div>
+            
+            <div class="star-rating">
+                <span class="star" data-rating="1">⭐</span>
+                <span class="star" data-rating="2">⭐</span>
+                <span class="star" data-rating="3">⭐</span>
+                <span class="star" data-rating="4">⭐</span>
+                <span class="star" data-rating="5">⭐</span>
+                <span class="star" data-rating="6">⭐</span>
+                <span class="star" data-rating="7">⭐</span>
+                <span class="star" data-rating="8">⭐</span>
+                <span class="star" data-rating="9">⭐</span>
+                <span class="star" data-rating="10">⭐</span>
+            </div>
+
+            <div id="successMsg" class="success-msg">✅ Thank you! Your rating has been submitted.</div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" id="submitBtn" onclick="submitRating()" disabled>Submit Rating</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // State
+        let currentTalkId = null;
+        let selectedRating = 0;
+
+        // Navigation
         const navItems = document.querySelectorAll('.nav-item');
         const sections = document.querySelectorAll('.section');
         navItems.forEach(item => {
@@ -202,6 +292,195 @@
                 sections.forEach(s => s.classList.remove('active'));
                 document.getElementById(item.dataset.section).classList.add('active');
             });
+        });
+
+        // Admin button
+        document.getElementById('adminBtn').addEventListener('click', () => {
+            navItems.forEach(n => n.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById('admin').classList.add('active');
+            loadAdminData();
+        });
+
+        document.getElementById('backBtn').addEventListener('click', () => {
+            navItems.forEach((n, i) => {
+                n.classList.remove('active');
+                if (i === 3) n.classList.add('active');
+            });
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById('contact').classList.add('active');
+        });
+
+        // Rating modal
+        document.querySelectorAll('.rateable').forEach(item => {
+            item.addEventListener('click', () => {
+                currentTalkId = item.dataset.talkId;
+                document.getElementById('modalTitle').textContent = item.dataset.talkName;
+                
+                if (localStorage.getItem(`voted_${currentTalkId}`)) {
+                    document.getElementById('modalSubtitle').textContent = '✅ You already rated this session';
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('submitBtn').textContent = 'Already Rated';
+                } else {
+                    document.getElementById('modalSubtitle').textContent = 'Select your rating (1-10 stars)';
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('submitBtn').textContent = 'Submit Rating';
+                }
+                
+                resetStars();
+                document.getElementById('ratingModal').classList.add('active');
+            });
+        });
+
+        // Star interaction
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                if (!localStorage.getItem(`voted_${currentTalkId}`)) {
+                    selectedRating = parseInt(star.dataset.rating);
+                    updateStars(selectedRating);
+                    document.getElementById('submitBtn').disabled = false;
+                }
+            });
+            
+            star.addEventListener('mouseenter', () => {
+                if (!localStorage.getItem(`voted_${currentTalkId}`)) {
+                    updateStars(parseInt(star.dataset.rating));
+                }
+            });
+        });
+
+        document.querySelector('.star-rating').addEventListener('mouseleave', () => {
+            updateStars(selectedRating);
+        });
+
+        function updateStars(rating) {
+            document.querySelectorAll('.star').forEach((star, index) => {
+                star.classList.toggle('active', index < rating);
+            });
+        }
+
+        function resetStars() {
+            selectedRating = 0;
+            updateStars(0);
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        function closeModal() {
+            document.getElementById('ratingModal').classList.remove('active');
+            resetStars();
+        }
+
+        // Submit rating
+        async function submitRating() {
+            if (selectedRating === 0 || !currentTalkId) return;
+            
+            try {
+                const result = await window.storage.get(`ratings_${currentTalkId}`, true);
+                let data = result ? JSON.parse(result.value) : { ratings: [], sum: 0, count: 0 };
+                
+                data.ratings.push(selectedRating);
+                data.sum += selectedRating;
+                data.count += 1;
+                
+                await window.storage.set(`ratings_${currentTalkId}`, JSON.stringify(data), true);
+                localStorage.setItem(`voted_${currentTalkId}`, 'true');
+                
+                document.getElementById('successMsg').style.display = 'block';
+                document.getElementById('submitBtn').disabled = true;
+                document.getElementById('submitBtn').textContent = 'Rating Submitted!';
+                
+                setTimeout(() => closeModal(), 1500);
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+                alert('Error submitting rating. Please try again.');
+            }
+        }
+
+        // Admin dashboard
+        async function loadAdminData() {
+            const adminContent = document.getElementById('adminContent');
+            adminContent.innerHTML = '<p style="text-align:center; color:#6b7280; padding:2rem;">Loading ratings...</p>';
+
+            const sessions = [
+                { id: 'd1_s1', name: 'Day 1 - Session 1 (11:10)' },
+                { id: 'd1_s2', name: 'Day 1 - Session 2 (14:40)' },
+                { id: 'd2_s1', name: 'Day 2 - Session 3 (09:40)' },
+                { id: 'd2_s2', name: 'Day 2 - Session 4 (11:00)' },
+                { id: 'd2_s3', name: 'Day 2 - Session 5 (15:10)' }
+            ];
+
+            let allRatings = [];
+            let totalVotes = 0;
+            let totalSum = 0;
+
+            for (let session of sessions) {
+                try {
+                    const result = await window.storage.get(`ratings_${session.id}`, true);
+                    if (result) {
+                        const data = JSON.parse(result.value);
+                        allRatings.push({
+                            name: session.name,
+                            average: (data.sum / data.count).toFixed(1),
+                            count: data.count
+                        });
+                        totalVotes += data.count;
+                        totalSum += data.sum;
+                    } else {
+                        allRatings.push({ name: session.name, average: 0, count: 0 });
+                    }
+                } catch (error) {
+                    console.error('Error loading:', session.id, error);
+                    allRatings.push({ name: session.name, average: 0, count: 0 });
+                }
+            }
+
+            document.getElementById('totalVotes').textContent = totalVotes;
+            document.getElementById('avgRating').textContent = totalVotes > 0 ? (totalSum / totalVotes).toFixed(1) : '0.0';
+
+            allRatings.sort((a, b) => parseFloat(b.average) - parseFloat(a.average));
+
+            let html = '';
+            if (allRatings.some(r => r.count > 0)) {
+                allRatings.forEach((talk, index) => {
+                    const stars = '⭐'.repeat(Math.round(parseFloat(talk.average)));
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                    html += `
+                        <div class="rating-item">
+                            <h4>${medal} #${index + 1} ${talk.name}</h4>
+                            <div class="rating-stats">
+                                <div>
+                                    <div class="rating-score">${talk.average}/10</div>
+                                    <div style="color: #fbbf24; margin-top: 0.25rem;">${stars}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 1.25rem; font-weight: 600; color: #6b7280;">${talk.count}</div>
+                                    <div style="font-size: 0.75rem; color: #9ca3af;">vote${talk.count !== 1 ? 's' : ''}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html = `
+                    <div style="text-align:center; padding:3rem; color:#6b7280;">
+                        <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
+                        <h3 style="color:#1f2937; margin-bottom:0.5rem;">No Ratings Yet</h3>
+                        <p style="font-size:0.875rem;">Ratings will appear here once students start voting!</p>
+                    </div>
+                `;
+            }
+
+            adminContent.innerHTML = html;
+        }
+
+        // Close modal on background click
+        document.getElementById('ratingModal').addEventListener('click', (e) => {
+            if (e.target.id === 'ratingModal') closeModal();
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
         });
     </script>
 </body>
