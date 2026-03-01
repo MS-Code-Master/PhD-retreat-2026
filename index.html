@@ -5,75 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PSLS PhD Retreat 2026</title>
     <meta name="description" content="5th Annual SciMed PSLS Conference - March 18-20, 2026">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#96004B">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1f2937; background-color: #f9fafb; }
         .container { max-width: 100%; margin: 0 auto; background: white; min-height: 100vh; }
-        .header { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 1.5rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #96004B 0%, #7a0040 100%); color: white; padding: 1.5rem 1rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
         .header p { opacity: 0.95; font-size: 1rem; }
         .nav { display: flex; overflow-x: auto; background: white; border-bottom: 1px solid #e5e7eb; }
         .nav-item { flex-shrink: 0; padding: 1rem 1.5rem; background: none; border: none; font-size: 0.875rem; font-weight: 500; color: #6b7280; cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; }
-        .nav-item.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .nav-item.active { color: #96004B; border-bottom-color: #96004B; }
         .content { padding: 1rem; }
         .section { display: none; }
         .section.active { display: block; }
         .agenda-day { background: white; border-radius: 0.75rem; margin-bottom: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1); overflow: hidden; }
-        .day-header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem; font-weight: 600; }
-        .agenda-item { padding: 1rem; border-bottom: 1px solid #f3f4f6; display: flex; gap: 1rem; }
+        .day-header { background: linear-gradient(135deg, #007E64 0%, #006654 100%); color: white; padding: 1rem; font-weight: 600; }
+        .agenda-item { padding: 1rem; border-bottom: 1px solid #f3f4f6; }
         .agenda-item:last-child { border-bottom: none; }
         .agenda-item.rateable { cursor: pointer; background: linear-gradient(90deg, #ffffff 0%, #f8fafc 100%); transition: all 0.3s; }
-        .agenda-item.rateable:hover { background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 100%); transform: translateX(4px); }
-        .agenda-item.rateable .agenda-content h3::after { content: " 🎤"; }
-        .time { flex-shrink: 0; font-weight: 600; color: #2563eb; font-size: 0.875rem; width: 5rem; }
-        .agenda-content h3 { font-weight: 600; margin-bottom: 0.25rem; color: #1f2937; font-size: 0.95rem; }
-        .agenda-content p { color: #6b7280; font-size: 0.875rem; }
+        .agenda-item.rateable:hover { background: linear-gradient(90deg, #f0fdf9 0%, #ccfbef 100%); transform: translateX(4px); }
+        .agenda-item.rateable .talk-title::after { content: " 🎤"; }
+        .time { font-weight: 600; color: #96004B; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .talk-title { font-weight: 600; margin-bottom: 0.25rem; color: #1f2937; font-size: 0.95rem; }
+        .talk-author { color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .view-abstract-btn { background: #007E64; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.813rem; cursor: pointer; margin-top: 0.5rem; transition: all 0.2s; }
+        .view-abstract-btn:hover { background: #006654; }
         .speaker-card { background: white; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1); }
-        .speaker-card h3 { color: #1f2937; margin-bottom: 0.5rem; font-weight: 600; }
-        .speaker-card .title { color: #2563eb; font-weight: 500; margin-bottom: 0.75rem; }
-        .speaker-card .expertise { background: #eff6ff; border-left: 3px solid #2563eb; padding: 0.75rem; margin: 0.75rem 0; font-size: 0.875rem; color: #1e40af; }
+        .speaker-card h3 { color: #96004B; margin-bottom: 0.5rem; font-weight: 600; }
+        .speaker-card .title { color: #007E64; font-weight: 500; margin-bottom: 0.75rem; }
+        .speaker-card .expertise { background: #f0fdf9; border-left: 3px solid #007E64; padding: 0.75rem; margin: 0.75rem 0; font-size: 0.875rem; color: #065f46; }
         .speaker-card p { color: #6b7280; font-size: 0.875rem; line-height: 1.6; }
         .info-card { background: white; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1); }
-        .info-card h3 { color: #1f2937; margin-bottom: 1rem; font-weight: 600; }
+        .info-card h3 { color: #96004B; margin-bottom: 1rem; font-weight: 600; }
         .info-card p { color: #6b7280; margin-bottom: 0.5rem; font-size: 0.875rem; }
         .info-card strong { color: #1f2937; }
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 1rem; }
-        .stat-box { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 1rem; border-radius: 0.5rem; text-align: center; border: 1px solid #bfdbfe; }
-        .stat-number { font-size: 1.5rem; font-weight: 700; color: #1e40af; }
-        .stat-label { font-size: 0.75rem; color: #3b82f6; margin-top: 0.25rem; }
+        .stat-box { background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); padding: 1rem; border-radius: 0.5rem; text-align: center; border: 1px solid #f9a8d4; }
+        .stat-number { font-size: 1.5rem; font-weight: 700; color: #96004B; }
+        .stat-label { font-size: 0.75rem; color: #be185d; margin-top: 0.25rem; }
         
-        /* Rating Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
         .modal.active { display: flex; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal-content { background: white; border-radius: 1rem; padding: 2rem; max-width: 90%; width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); animation: slideUp 0.3s; }
+        .modal-content { background: white; border-radius: 1rem; padding: 2rem; max-width: 90%; width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); animation: slideUp 0.3s; }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-header h2 { color: #1f2937; font-size: 1.25rem; margin-bottom: 0.5rem; text-align: center; }
-        .modal-header p { color: #6b7280; font-size: 0.875rem; text-align: center; margin-bottom: 1.5rem; }
-        .rating-display { text-align: center; font-size: 2rem; font-weight: 700; color: #2563eb; margin-bottom: 1rem; min-height: 2.5rem; }
+        .modal-header h2 { color: #96004B; font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .modal-header p { color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .abstract-text { color: #374151; font-size: 0.875rem; line-height: 1.7; margin-bottom: 1.5rem; white-space: pre-wrap; }
+        .rating-display { text-align: center; font-size: 2rem; font-weight: 700; color: #007E64; margin-bottom: 1rem; min-height: 2.5rem; }
         .star-rating { display: flex; justify-content: center; gap: 0.5rem; margin: 1rem 0 2rem 0; flex-wrap: wrap; }
         .star { font-size: 2rem; cursor: pointer; transition: all 0.2s; user-select: none; filter: grayscale(100%); opacity: 0.3; }
         .star.active { filter: grayscale(0%) drop-shadow(0 0 8px rgba(251, 191, 36, 0.6)); opacity: 1; transform: scale(1.15); }
         .star:hover { filter: grayscale(0%); opacity: 0.8; transform: scale(1.1); }
         .modal-buttons { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
         .btn { flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-        .btn-primary { background: #2563eb; color: white; }
-        .btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+        .btn-primary { background: #007E64; color: white; }
+        .btn-primary:hover:not(:disabled) { background: #006654; }
         .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
         .btn-secondary { background: #e5e7eb; color: #1f2937; }
         .btn-secondary:hover { background: #d1d5db; }
         .success-msg { background: #d1fae5; color: #065f46; padding: 0.75rem; border-radius: 0.5rem; text-align: center; margin-top: 1rem; font-size: 0.875rem; display: none; }
         
+        /* Password Modal */
+        .password-input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; margin-bottom: 1rem; }
+        .password-input:focus { outline: none; border-color: #007E64; }
+        .password-error { color: #dc2626; font-size: 0.875rem; margin-bottom: 0.5rem; display: none; }
+        
         /* Admin Dashboard */
         .admin-btn { background: transparent; border: 2px dashed #e5e7eb; color: #9ca3af; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.75rem; cursor: pointer; margin-top: 1rem; width: 100%; }
-        .admin-btn:hover { border-color: #2563eb; color: #2563eb; }
-        .admin-header { background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; text-align: center; }
+        .admin-btn:hover { border-color: #96004B; color: #96004B; }
+        .admin-header { background: linear-gradient(135deg, #96004B 0%, #7a0040 100%); color: white; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; text-align: center; }
         .rating-item { background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 0.75rem; }
         .rating-item h4 { color: #1f2937; margin-bottom: 0.75rem; }
         .rating-stats { display: flex; justify-content: space-between; align-items: center; }
-        .rating-score { font-size: 1.75rem; font-weight: 700; color: #2563eb; }
+        .rating-score { font-size: 1.75rem; font-weight: 700; color: #007E64; }
         .live-indicator { display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-left: 0.5rem; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
@@ -98,46 +106,238 @@
             <section class="section active" id="agenda">
                 <div class="agenda-day">
                     <div class="day-header">Day 1 - Wednesday, March 18, 2026</div>
-                    <div class="agenda-item"><div class="time">07:00</div><div class="agenda-content"><h3>Depart to Schwarzsee</h3><p>Departure from Geneva</p></div></div>
-                    <div class="agenda-item"><div class="time">09:30</div><div class="agenda-content"><h3>Arrival + Registration</h3><p>Welcome coffee</p></div></div>
-                    <div class="agenda-item"><div class="time">10:25</div><div class="agenda-content"><h3>Welcome</h3><p>Opening remarks</p></div></div>
-                    <div class="agenda-item"><div class="time">10:30</div><div class="agenda-content"><h3>Speaker 1</h3><p>Prof. Dr. Eva Ringler</p></div></div>
-                    <div class="agenda-item rateable" data-talk-id="d1_s1" data-talk-name="Day 1 - Session 1 (11:10)"><div class="time">11:10</div><div class="agenda-content"><h3>Student Talks (Session 1)</h3><p>3 talks + 3 flash talks - Click to rate!</p></div></div>
-                    <div class="agenda-item"><div class="time">12:30</div><div class="agenda-content"><h3>Lunch + Check-in</h3></div></div>
-                    <div class="agenda-item"><div class="time">14:00</div><div class="agenda-content"><h3>Speaker 2</h3><p>Prof. Dr. Andrew Charles Oates</p></div></div>
-                    <div class="agenda-item rateable" data-talk-id="d1_s2" data-talk-name="Day 1 - Session 2 (14:40)"><div class="time">14:40</div><div class="agenda-content"><h3>Student Talks (Session 2)</h3><p>3 talks + 3 flash talks - Click to rate!</p></div></div>
-                    <div class="agenda-item"><div class="time">16:00</div><div class="agenda-content"><h3>Team Building</h3></div></div>
-                    <div class="agenda-item"><div class="time">18:00</div><div class="agenda-content"><h3>Poster Session I + Apero</h3></div></div>
-                    <div class="agenda-item"><div class="time">20:00</div><div class="agenda-content"><h3>Dinner + Social</h3></div></div>
+                    <div class="agenda-item"><div class="time">07:00</div><div class="talk-title">Depart to Schwarzsee</div><div class="talk-author">Departure from Geneva</div></div>
+                    <div class="agenda-item"><div class="time">09:30</div><div class="talk-title">Arrival + Registration</div><div class="talk-author">Welcome coffee</div></div>
+                    <div class="agenda-item"><div class="time">10:25</div><div class="talk-title">Welcome</div><div class="talk-author">Opening remarks</div></div>
+                    <div class="agenda-item"><div class="time">10:30</div><div class="talk-title">Keynote I</div><div class="talk-author">Dr. Mathilda Fatton</div></div>
+                    
+                    <!-- SESSION 1 -->
+                    <div class="agenda-item rateable" data-talk-id="d1_s1_t1" data-talk-name="Corentin Montessuit" data-abstract="Cardiogenic shock is a life-threatening condition in which the heart fails to pump sufficient blood and oxygen to meet the body's metabolic demands. When medication alone cannot restore adequate cardiac function, mechanical circulatory support becomes necessary. One of the most used devices for this purpose is veno-arterial extracorporeal membrane oxygenation (VA-ECMO). However, VA-ECMO use carries significant risks of complications, making it essential to establish protocols that can determine, as early as possible, when the device can be safely removed. In this context, we study the hemodynamic effects of VA-ECMO in patients with cardiac dysfunction. To achieve this, we develop experimental setups that mimic systemic blood circulation and create a numerical model of the cardiovascular system. In addition, we explore new operating protocols for VA-ECMO that enable direct measurement of cardiac output through the device and potentially allow automatic determination of whether VA-ECMO can be safely discontinued without endangering the patient.">
+                        <div class="time">11:10</div>
+                        <div class="talk-title">Using VA-ECMO to assess physiological parameters</div>
+                        <div class="talk-author">Corentin Montessuit (CHIRU)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd1_s1_t1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d1_s1_f1" data-talk-name="Margulan Otanuly" data-abstract="Age-related macular degeneration (AMD) is a progressive retinal disorder causing severe vision loss and approximated to affect 288 million people worldwide by 2040. Common treatment strategies involve transplantation of autologous or allogeneic retinal pigment epithelial (RPE) cells derived from various stem cell types, such as neural (NSCs), mesenchymal (MSCs), embryonic (ESCs), and induced pluripotent stem cells (iPSCs). Among these, iPSCs show strong potential, with iPSC-derived RPE (iRPE) transplants improving visual function. However, challenges remain, including graft-versus-host disease, intraocular inflammation linked to viral vectors, and invasive tissue harvesting. To address these limitations, this project utilizes urine-derived autologous iPSCs and non-viral Sleeping Beauty (SB) transposon technology to generate genetically enhanced iRPE cells. This approach minimizes immune complications, reduces genotoxicity, and supports long-term graft survival, offering a promising step toward personalized, durable regenerative therapy for AMD.">
+                        <div class="time">11:30 (Flash)</div>
+                        <div class="talk-title">Stem cell-based gene therapy for neuroretinal degeneration</div>
+                        <div class="talk-author">Margulan Otanuly (NEUCLI)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd1_s1_f1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d1_s1_t2" data-talk-name="Crisalida Borges" data-abstract="Centrosomes are key organizers of the mitotic spindle, yet some cells can divide without them. To understand how human somatic cells adapt to centrosome loss, I generated RPE1 cells entirely lacking centrosomes. These acentrosomal cells exhibit delayed mitosis and frequent spindle assembly defects, providing a unique system to study compensatory mechanisms. Using automated live-cell imaging and machine learning, I am screening for proteins that facilitate acentrosomal spindle bipolarization and investigating how cells detect and respond to centrosome absence. This work aims to reveal how cells preserve division fidelity when a critical organizing structure is missing.">
+                        <div class="time">11:35</div>
+                        <div class="talk-title">Spindle Assembly Without Centrosomes</div>
+                        <div class="talk-author">Crisalida Borges (PHYM)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd1_s1_t2')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d1_s1_f2" data-talk-name="Ji Wang" data-abstract="Transposable elements (TEs) are pervasive and difficult to annotate: homology-based tools miss novel or highly diverged families, and structure-based pipelines often fail on degraded copies. We present a library-free ab initio TE detector built on GENERanno, a genomic language model with 1-bp resolution and an 8192-bp context window. Human-only training yields high in-distribution accuracy but suffers from a 'context trap' that harms cross-species transfer. Multi-species fine-tuning learns a universal TE grammar and improves generalization (F1: Drosophila 0.21->0.97; unseen frog 0.13->0.79). On zebrafish, the model surpasses RepeatModeler2 and EarlGrey (F1 0.9635) while annotating whole genomes in ~8-10 hours on one GPU. Embedding analyses show unsupervised separation of major TE superfamilies, supporting biological interpretability.">
+                        <div class="time">11:55 (Flash)</div>
+                        <div class="talk-title">Ab initio TE annotation with genomic language models</div>
+                        <div class="talk-author">Ji Wang (GEDEV)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd1_s1_f2')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item"><div class="time">12:30</div><div class="talk-title">Lunch + Check-in</div></div>
+                    
+                    <!-- SESSION 2 -->
+                    <div class="agenda-item"><div class="time">14:00</div><div class="talk-title">Keynote II</div><div class="talk-author">Prof. Dr. Eva Ringler</div></div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d1_s2_f1" data-talk-name="Daniel Reichenpfader" data-abstract="Large language models (LLMs) have demonstrated strong potential for clinical natural language processing (NLP), yet their application in healthcare remains limited by challenges in interpretability and generalizability. This thesis investigates semantic enrichment strategies to improve the performance and trustworthiness of LLM-based clinical NLP systems. The proposed research pursues (i) the design of a clinician-centered architectural framework for semantic information extraction, (ii) systematic evaluation of LLM architectures for frame-semantic extraction, and (iii) the introduction of post-hoc interpretability methods to identify and quantify evidence in model outputs. These contributions aim to advance the integration of semantic knowledge into LLMs, fostering more accurate and interpretable applications in medical informatics.">
+                        <div class="time">14:40 (Flash)</div>
+                        <div class="talk-title">Semantic enrichment of LLMs for clinical NLP</div>
+                        <div class="talk-author">Daniel Reichenpfader (GESAN-EXT)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd1_s2_f1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d1_s2_t1" data-talk-name="Annet Puthenpurackal" data-abstract="Cryptosporidium parvum, one of the leading causes of diarrheal death in children, remodels its infection site through secreted proteins. Several accumulate at the host-parasite interface, forming a complex structure whose importance for infection remain poorly understood. Here, we localized and functionally characterized the putative dense granule protein DG7. We confirmed the protein to be in the dense granules, forming a ring-like structure once secreted at the interface. Applying ultrastructure expansion microscopy on intestinal sections, we localized DG7 above the dense band and at the base of the parasitophorous vacuole membrane. Deletion of DG7 showed reduced infection in mice and early defect in vitro, revealing its importance for parasite fitness. Additional secreted proteins were identified as partners, among which SG3, a small granule protein, partially co-localized with DG7 at the interface. In this study, we introduce tools to better visualize and understand the host-parasite interface through the generation of antibodies against DG7 and SG3, revealing a complex layered interface.">
+                        <div class="time">14:45</div>
+                        <div class="talk-title">Cryptosporidium proteins at host-parasite interface</div>
+                        <div class="talk-author">Annet Puthenpurackal (MIMOL)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd1_s2_t1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d1_s2_f2" data-talk-name="Ornella Chardonnet" data-abstract="During cell division, mitotic chromosomes are segregated through the action of the kinetochore complex, which links spindle microtubules to the centromere. Centromeres are defined by the histone H3 variant CENP-A, whose distribution can be localized or extend along the entire chromosome, as in holocentric organisms. In our study, we investigate kinetochore distribution relative to the holocentric centromere in Caenorhabditis elegans. We focus on CENP-C, a conserved kinetochore protein that interacts with CENP-A and is among the first recruited during kinetochore assembly. To map CENP-C binding across the C. elegans genome, we choose the DNA adenine methylation identification (DamID) technique, which fuses CENP-C to E. coli Dam methyltransferase to mark proximal DNA in vivo. These profiles will show CENP-C's genomic distribution, providing insights into kinetochore organization in a holocentric context.">
+                        <div class="time">15:05 (Flash)</div>
+                        <div class="talk-title">Holocentromere mapping in C. elegans using DamID</div>
+                        <div class="talk-author">Ornella Chardonnet (MOCELL)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd1_s2_f2')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item"><div class="time">15:10</div><div class="talk-title">Coffee Break</div></div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d1_s2_t2" data-talk-name="Leonardo Marconi" data-abstract="Neurons are excitable cells characterized by their morphology, firing properties and connectivity patterns. However, how neurons establish and maintain distinct identities is poorly understood. The mouse olfactory epithelium offers a powerful model to study this question. Each olfactory sensory neuron (OSN) expresses a single olfactory receptor (OR) that determines its axonal projections to a specific location in the olfactory bulb, thereby establishing parallel coding lines. In previous work, we showed that OSNs exhibit receptor-specific transcriptomic profiles that correlate with OR sequence, suggesting that ORs themselves plays a key role in defining neuronal transcriptomic identity. ORs are G-protein coupled receptors that activate an olfactory cascade involving Gαolf, AC3 and CNGA2. Here, we investigated whether these different cascade elements shape OSNs' transcriptional programs. Using single-cell RNA sequencing in wild-type and mutant mice, we found two intracellular signal pathways instructed by the OR that shape the transcriptional profile of OSN populations: a cAMP-dependent and a Ca2+ pathway. These pathways instruct the expression of distinct sets of genes, both contributing to the establishment of a thousand distinct neuronal transcriptomic identities.">
+                        <div class="time">15:30</div>
+                        <div class="talk-title">Transcriptional programs in olfactory sensory neurons</div>
+                        <div class="talk-author">Leonardo Marconi (GENEV)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd1_s2_t2')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d1_s2_f3" data-talk-name="Maxim Marfin" data-abstract="During embryogenesis, Hematopoietic Stem Cells (HSCs) are produced as a rare subset along the aorta and must undergo rapid expansion in a secondary niche where they extravasate and interact with endothelial cells (ECs). This process, called 'endothelial cuddling', creates the microenvironment required for the maintenance and expansion of HSCs. We use zebrafish as a model to study hematopoietic development since the major signaling pathways and cell components of the blood system are conserved with mammals. Our goal is to understand how ECs acquire the vascular niche identity and promote HSCs expansion. I investigate the role of transcription factors predicted to be active in the ECs of the vascular niche. Bioinformatic analysis of scRNA-seq performed on sorted ECs from the vascular niche highlighted zeb2a as an active transcription factor. I showed that zeb2a is indeed expressed in the anatomical region of the vascular niche before its establishment. Moreover, zeb2a knockdown led to an increased HSC expansion. The overexpression of zeb2a through mRNA injection led to important developmental malformations, while the dominant negative form of zeb2a only presents a hematopoietic phenotype. I will perform tissue-specific gain-of-function and zeb2a KO lines to further asses its role in embryonic hematopoiesis.">
+                        <div class="time">15:50 (Flash)</div>
+                        <div class="talk-title">zeb2a and HSC expansion during embryogenesis</div>
+                        <div class="talk-author">Maxim Marfin (PATIM)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd1_s2_f3')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item"><div class="time">16:00</div><div class="talk-title">Team Building</div></div>
+                    <div class="agenda-item"><div class="time">18:00</div><div class="talk-title">Poster Session I + Apero</div></div>
+                    <div class="agenda-item"><div class="time">20:00</div><div class="talk-title">Dinner + Social</div></div>
                 </div>
 
                 <div class="agenda-day">
                     <div class="day-header">Day 2 - Thursday, March 19, 2026</div>
-                    <div class="agenda-item"><div class="time">07:00</div><div class="agenda-content"><h3>Breakfast</h3></div></div>
-                    <div class="agenda-item"><div class="time">09:00</div><div class="agenda-content"><h3>Speaker 3</h3><p>Dr. Mathilda Fatton</p></div></div>
-                    <div class="agenda-item rateable" data-talk-id="d2_s1" data-talk-name="Day 2 - Session 3 (09:40)"><div class="time">09:40</div><div class="agenda-content"><h3>Student Talks (Session 3)</h3><p>3 talks - Click to rate!</p></div></div>
-                    <div class="agenda-item"><div class="time">10:40</div><div class="agenda-content"><h3>Coffee Break</h3></div></div>
-                    <div class="agenda-item rateable" data-talk-id="d2_s2" data-talk-name="Day 2 - Session 4 (11:00)"><div class="time">11:00</div><div class="agenda-content"><h3>Student Talks (Session 4)</h3><p>4 talks + 2 flash talks - Click to rate!</p></div></div>
-                    <div class="agenda-item"><div class="time">12:30</div><div class="agenda-content"><h3>Lunch</h3></div></div>
-                    <div class="agenda-item"><div class="time">14:00</div><div class="agenda-content"><h3>Sponsor Talks</h3></div></div>
-                    <div class="agenda-item"><div class="time">14:30</div><div class="agenda-content"><h3>Speaker 4</h3><p>Prof. Dr. Michael N. Hall</p></div></div>
-                    <div class="agenda-item rateable" data-talk-id="d2_s3" data-talk-name="Day 2 - Session 5 (15:10)"><div class="time">15:10</div><div class="agenda-content"><h3>Student Talks (Session 5)</h3><p>3 talks + 2 flash talks - Click to rate!</p></div></div>
-                    <div class="agenda-item"><div class="time">17:00</div><div class="agenda-content"><h3>Poster Session II + Apero</h3></div></div>
-                    <div class="agenda-item"><div class="time">18:30</div><div class="agenda-content"><h3>Free Time</h3></div></div>
-                    <div class="agenda-item"><div class="time">19:30</div><div class="agenda-content"><h3>Dinner + Party</h3></div></div>
+                    <div class="agenda-item"><div class="time">07:00</div><div class="talk-title">Breakfast</div></div>
+                    
+                    <!-- SESSION 3 -->
+                    <div class="agenda-item"><div class="time">09:00</div><div class="talk-title">Keynote III</div><div class="talk-author">Prof. Dr. Andrew Charles Oates</div></div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s1_t1" data-talk-name="Petros Liakopoulos" data-abstract="Immune checkpoint inhibitors (ICI) have markedly improved survival in advanced melanoma, with 10-year OS rates of 44% for anti-PD1 and 52% for combined anti-CTLA4/PD1. However, nearly half of patients progress within a year. Existing biomarkers such as PD-L1 expression and immune phenotypes lack predictive power. To discover spatial proteomic, transcriptomic, and digital pathology biomarkers, we established a panel of 94 antibodies and 480 transcripts covering stromal, immune, and tumor compartments and key signaling pathways (MAPK, AKT, TGFB, MYC, IFNG). Baseline biopsies from 50 melanoma patients treated with first-line ICIs underwent spatial transcriptomics (10X Xenium), H&E staining, and multiplex immunofluorescence (Akoya Phenocycler). Xenium, H&E, and mIF images were co-registered using Warpy. Manual cell annotations from Xenium and mIF were transferred to H&E images. Our panels identified diverse tumor, stromal, and immune cell types, revealing significant intra- and inter-tumoral heterogeneity. Pre-IF H&E slides enabled Deep Learning models to predict cell types directly from H&E. Ongoing work focuses on linking spatial patterns to ICI response and validating cell type detection from routine histology.">
+                        <div class="time">09:40</div>
+                        <div class="talk-title">Spatial omic markers in melanoma immunotherapy</div>
+                        <div class="talk-author">Petros Liakopoulos (DEMED)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s1_t1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s1_t2" data-talk-name="Loris Levet" data-abstract="Autophagy, a catabolic process involving lysosomes, is essential for skeletal muscle homeostasis. X-linked myopathy with excessive autophagy (XMEA) is a rare myopathy characterized by accumulation of autophagic vacuoles in skeletal muscle and caused by mutations in the VMA21 gene. VMA21 is a chaperone of the vacuolar (v)-ATPase proton pump, required for lysosomal acidification. VMA21 deficiency would reduce v-ATPase activity and thereby increase lysosomal pH, ultimately leading to autophagy blockade. We recently showed that Vma21 muscle-specific knockout mice display early lethality with severe muscle degeneration. Moreover, besides the ubiquitous VMA21 isoform (VMA21a), our lab identified a long isoform specific of skeletal muscle (VMA21b). The physiological roles of each VMA21 isoform and their contribution to XMEA remain unknown. Here, we modulated the expression of VMA21 isoforms in vivo to better understand their functions in muscle. Acute depletion of VMA21 in adult muscle led to complete tissue degeneration, indicating that VMA21 is required for muscle homeostasis. Surprisingly, overexpression of both isoforms also caused pronounced muscle degeneration. Deciphering VMA21 functions will help to understand XMEA pathogenesis and design therapeutic approaches for the disease.">
+                        <div class="time">10:00</div>
+                        <div class="talk-title">VMA21 modulation in skeletal muscle</div>
+                        <div class="talk-author">Loris Levet (PHYM)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s1_t2')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s1_f1" data-talk-name="Saurabh Mathur" data-abstract="Fluorescence microscopy is a method of choice for investigating intracellular organization and has generated extensive information on organelle location, morphology, and modes of communication. At the same time, fluorescence microscopy has drawbacks that hinder efforts to obtain a birds-eye-view of the cell architecture. In particular, spectral overlap between fluorophores, laborious sample preparation (e.g., a strain or cell line with a marker of interest), and phototoxicity limit the number of features that can be visualized concurrently and prevent imaging over long timescales. Here, we address these limitations through transmission light microscopy augmented by artificial intelligence. Specifically, we developed deep neural networks capable of identifying Saccharomyces cerevisiae organelles directly from brightfield images, thereby eliminating the need for fluorescent markers. Our results demonstrate that in log-phase yeast cells, deep neural networks can robustly identify the cells, their nucleus, the cell membrane, bud necks, and vacuoles in three dimensions. Furthermore, by correlating protein abundance with morphological features extracted from in silico segmented organelles, we show that seemingly homogeneous yeast populations can be stratified into biologically meaningful subpopulations.">
+                        <div class="time">10:20 (Flash)</div>
+                        <div class="talk-title">AI-Augmented Light Microscopy</div>
+                        <div class="talk-author">Saurabh Mathur (MOCELL)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s1_f1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s1_t3" data-talk-name="Souradip Mukherjee" data-abstract="Cilia and flagella are specialized eukaryotic organelles that extend from the cell surface, performing functions such as cell motility, sensory perception, and signal transduction. The ciliary transition zone (TZ) is a critical region at the base of these structures, acting as a gatekeeper and playing a vital role in signal transduction and trafficking. Mutations in proteins localized to the TZ region often lead to diseases like blindness, obesity, infertility etc. The molecular mechanisms underlying these ciliopathies are not well understood but are thought to be associated with the loss of structure and function of the TZ components. The TZ is characterized by a ninefold symmetry of microtubule doublets (MTDs) connected by an inner scaffold structure and MTDs linked to the ciliary membrane via 'Y-links'. Despite its importance, the native structure and molecular composition of the TZ remain poorly understood. Here, we aim at elucidating the molecular architecture of the extended TZ in mouse rod photoreceptors (often referred to as connecting cilia, ~1.5 μm), using state-of-the-art in situ cryo-electron tomography (cryo-ET) and sub-tomogram averaging (STA). During the PhD retreat, I will present the latest efforts towards reaching this goal and some early results.">
+                        <div class="time">10:25</div>
+                        <div class="talk-title">Ciliary transition zone architecture by cryo-ET</div>
+                        <div class="talk-author">Souradip Mukherjee (MOCELL)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s1_t3')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item"><div class="time">10:40</div><div class="talk-title">Coffee Break</div></div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s2_t1" data-talk-name="Flaela Kalemi" data-abstract="Ions in the gas phase have a distribution of internal energies. In mass spectrometry, ionization and activation (e.g., tandem MS) increase this energy, influencing fragmentation, intensities, and conformational changes. Evaluating internal energy is important to compare instruments with different geometries and rationalizing spectra from varying ionization/activation conditions. The distribution of internal energies can be characterized by only one parameter: effective temperature (Teff). It can be evaluated using ions that have known activation parameters such as the Arrhenius activation energy (Ea) and the pre-exponential factor (A). These are called thermometer ions. Effective temperatures have been evaluated for Bradykinin, Leucine Enkephalin, Ubiquitin, and holo-Myoglobin dissolved in water/acetonitrile (/acetic acid) and electrosprayed into a quadrupole ion trap. In this last, ions are activated via the application of a resonant frequency. The calibration establishes a Teff–amplitude relationship. As previously found, a linear relationship of the form Teff(K)=intercept+slope Amp(V) was derived for all ions. This calibration enables the determination of Arrhenius parameters of new thermometer ions, such as G-quadruplexes and different duplexes. In future works, these thermometer ions will be used to calibrate other mass spectrometers and help rationalize ion activation conditions for in-source CID or tandem MS.">
+                        <div class="time">11:00</div>
+                        <div class="talk-title">Effective temperature calibration in ion traps</div>
+                        <div class="talk-author">Flaela Kalemi (PHARM)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s2_t1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s2_f1" data-talk-name="Junyi Yang" data-abstract="The microbiota–gut–brain (MGB) axis mediates bidirectional communication between the gut microbiota and the central nervous system through neural, immune, and metabolic pathways. Evidence across taxa shows that microbial communities profoundly influence neurodevelopment, brain function, and behavior. In the honeybee (Apis mellifera), a tractable model for studying sociality, the gut microbiota modulates brain amino acid metabolism, chromatin-related gene expression, and social behaviors. These findings suggest that microbial signals regulate social behavior through epigenetic mechanisms, yet the underlying processes remain elusive. My PhD project aims to elucidate how the gut microbiota shapes the honeybee brain epigenome to modulate social behaviors. I will employ gnotobiotic bees to control microbial colonization, integrate automated behavioral tracking with epigenomic profiling, and use pharmacological perturbations for reciprocal validation. By March, I expect to obtain initial ATAC-seq/CUT&Tag data comparing microbiota-free and colonized bees to reveal whether gut microbes leave epigenomic imprints in the brain. These findings may offer preliminary insights into microbial regulation of social behavior via brain remodeling.">
+                        <div class="time">11:20 (Flash)</div>
+                        <div class="talk-title">Gut microbiota shapes honeybee brain epigenome</div>
+                        <div class="talk-author">Junyi Yang (GENEV)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s2_f1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s2_t2" data-talk-name="Jérémy Kessler" data-abstract="We discovered a new, previously undescribed heterodimeric cytokine within the TGFβ family that exerts key functions in skeletal muscle regeneration. Biochemical and structural analyses revealed that this cytokine preferentially forms heterodimers rather than respective homodimers, driven by specific cysteines within TGFβ prodomain. In contrast, homodimer formation leads to aggregation and loss of latency. Unlike TGFβ1, which is mainly associated with fibrosis and immune infiltration, this heterodimer is expressed by myogenic cells, tendon cells, and fibro-adipogenic progenitors, indicating a physiological role in muscle homeostasis. Activation assays demonstrated that only the latent heterodimeric form is activated in muscle through αvβ6 integrin, predominantly triggering SMAD2/3 signaling, whereas TGFβ1 more strongly induces the profibrotic SMAD1/5/9 pathway. Functionally, the heterodimer supports muscle homeostasis and regeneration, mainly through the maintenance of satellite cell stemness. Together, these findings identify heterodimeric TGFβ signaling as a distinct regulatory mechanism that promotes regeneration rather than fibrosis. Blocking TGFβ1, while preserving heterodimeric signaling, may therefore prevent fibrotic outcomes while maintaining effective muscle regeneration via the canonical SMAD2/3 pathway, opening new therapeutic possibilities for the treatment of myopathies.">
+                        <div class="time">11:25</div>
+                        <div class="talk-title">Heterodimeric TGFβ in muscle regeneration</div>
+                        <div class="talk-author">Jérémy Kessler (PHYM)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s2_t2')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s2_t3" data-talk-name="Fandilla-Marie Furlan" data-abstract="Sociability in animals offers benefits but increases the risk of pathogen exposure. To mitigate this, social species like rodents have evolved behaviors to avoid sick conspecifics, often using olfactory cues. These cues activate the vomeronasal organ (VNO), a sensory system involved in detecting innate signals. Prior research showed that the VNO is necessary for recognizing and avoiding sick individuals, but the underlying molecular mechanisms remained unclear. The VNO contains neurons expressing various receptors, including vomeronasal type 1 and 2, and notably, formyl-peptide receptors (FPRs), which originally evolved for immune function. In mice, genetic events repurposed FPRs for sensory roles. These vomeronasal FPRs can detect ligands like bacterial peptides, also recognized by immune FPRs. We hypothesized that these sensory FPRs detect illness in conspecifics. Histological analysis confirmed FPR activation by sick individuals. Furthermore, mice lacking vomeronasal FPRs no longer show preference for healthy conspecifics. These results support the idea that vomeronasal FPRs act as sensors of sick conspecifics.">
+                        <div class="time">11:45</div>
+                        <div class="talk-title">Formyl peptide receptors and sick conspecific avoidance</div>
+                        <div class="talk-author">Fandilla-Marie Furlan (GENEV)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s2_t3')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s2_f2" data-talk-name="Paola Isabel Aguirre de la Cruz" data-abstract="The endosperm plays a central role in controlling seed germination, i.e the transition from seed to seedling. Surprisingly, it has shown in our laboratory that the endosperm is also necessary for proper seedling development, but the mechanisms remain unknown. Members of the MYB transcription factor family were identified with specific expression in the endosperm and the triple myb mutant (myb101.33.65) displayed several developmental defects, including shorter roots and hypocotyls, absence of an apical hook, and delayed cotyledon emergence in both light and darkness. Histological analyses showed that endosperm cells in the mutant remain attached to the cotyledons at 48 hours after germination, suggesting impaired endosperm–embryo separation. Transcriptomic data further confirmed that these MYBs act specifically in the endosperm and that their alteration profoundly changes its transcriptional program.">
+                        <div class="time">12:05 (Flash)</div>
+                        <div class="talk-title">Endospermic MYB TFs in seedling development</div>
+                        <div class="talk-author">Paola Isabel Aguirre de la Cruz (BIVEG)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s2_f2')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s2_t4" data-talk-name="Rossana Putino" data-abstract="This study investigates how transcriptional programs are initiated and maintained during organogenesis, using the mouse limb as a model system. We aim to produce a high-resolution map of early-acting enhancers, termed initiating elements, and late-acting enhancers, termed maintenance elements. Single-cell transcriptome of mouse limbs identified Sall4 as a limb mesenchymal progenitor marker, together with late limb cell-type markers such as Col2a1 (chondrocytes) and Foxp2 (perichondrocytes). Experimentally, we generated mESCs expressing Sall4-sfGFP to identify initiating elements via the epigenome profiling of sorted limb progenitor cells. Through tetraploid complementation of these mESCs, we obtained embryos and could validate that the sfGFP expression pattern match the one of Sall4. In parallel, we established a Foxp2-eGFP reporter clone and obtained E14.5 embryos successfully marking perichondrocytes. In Sall4-sfGFP+ and Foxp2-eGFP+ cells, as well as other late-cell types, H3K27ac ChIP and ATAC-Seq will be performed to identify early and late-acting enhancer regions. This project will deliver the first temporally resolved, cell-type-specific atlas of limb enhancers, providing insights into how enhancers establish and maintain gene expression programs.">
+                        <div class="time">12:10</div>
+                        <div class="talk-title">Temporal enhancer dynamics in mouse limb development</div>
+                        <div class="talk-author">Rossana Putino (GEDE)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s2_t4')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item"><div class="time">12:30</div><div class="talk-title">Lunch</div></div>
+                    
+                    <!-- SESSION 4 -->
+                    <div class="agenda-item"><div class="time">14:00</div><div class="talk-title">Keynote IV</div><div class="talk-author">Prof. Dr. Michael Hall - mTOR signaling</div></div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s3_f1" data-talk-name="Sandra Moreno Sanchez" data-abstract="Cryptosporidium parvum is an apicomplexan parasite accounting for a large proportion of diarrheal deaths in children worldwide. It is transmitted via the fecal-oral route and infects small intestine epithelial cells, where it develops intracellularly. Cryptosporidium shares apicomplexans' morphological features, such as the pellicle peripheric membrane system composed of the plasma membrane and the inner membrane complex (IMC), which has not yet been characterized in Cryptosporidium. Nevertheless, it is a unique parasite that has lost the apicoplast and has a reduced mitochondrion-like organelle (mitosome), which overall renders it unable to biosynthesize key metabolites. Making it heavily dependent on the host cell metabolism to salvage many nutrients, likely through transporters, of which only a few have been characterized to date. Here, we focus on studying the pellicle biogenesis during replication and characterize two of its associated transporters via mAID inducible knock-down system and direct KO, to increase the knowledge of Cryptosporidium metabolic adaptations and find new ways to tackle the disease.">
+                        <div class="time">14:40 (Flash)</div>
+                        <div class="talk-title">Cryptosporidium pellicle and transporters</div>
+                        <div class="talk-author">Sandra Moreno Sanchez (MIMOL)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s3_f1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s3_t1" data-talk-name="Tanner Smith" data-abstract="Interactions between humans and wildlife result from a complex collection of decisions, environmental factors, and chance, but the precise predictors are often scale and context dependent. Although the cause of conflict is undoubtedly complex, there are a handful of common variables that are frequently analyzed to understand conflict, yet there is still little understanding of how these drivers differ by context. Understanding these correlates is paramount to understanding how conflict may interact with top-down policy and global change, to ultimately determine the success of global conservation targets. We assess common correlates of conflict on a global scale as well as context-dependent drivers for each situation to evaluate the context dependence and trends on an intermediate scale. We find that in most cases, global conflict can be accurately predicted by just 9 variables available at the global scale. The two most consistent factors in the models were distance from protected areas and human population density. Importantly, the influence of the variables is highly dependent on local context but studies in related biomes, featuring similar taxa, or with geographical proximity are more similar to one another. We discuss the implications of the relationship of negative human-wildlife interactions to protected areas, and how this understanding can be used for global conservation policy.">
+                        <div class="time">14:45</div>
+                        <div class="talk-title">Spatial correlates of human-wildlife conflict</div>
+                        <div class="talk-author">Tanner Smith (MOHANI)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s3_t1')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s3_f2" data-talk-name="Alana Vannay" data-abstract="The rise in obesity prevalence and its related metabolic disorders, including diabetes, dyslipidemia, and non-alcoholic fatty liver disease, has become a critical health concern worldwide. Current treatments remain limited, highlighting the need for alternative therapeutic approaches that target metabolic dysfunction and inflammation. A recent study showed that low doses of carbon monoxide (CO), administered through a CO-releasing molecule (CORM), protected mice against high-fat diet-induced weight gain and insulin resistance. However, the mechanisms underlying these effects are not yet understood. Feeding mice with a high-sugar, high-fat diet (HFHSD), we confirmed the beneficial effects of CORM treatment, regardless of diet composition. CO exposure reduced villus length and nutrient transporters in the small intestine, indicating a decrease in nutrient absorption. CO also improved goblet cell abundance and LPS-binding protein levels, suggesting a protective effect against gut inflammation. An euglycemic-hyperinsulinemic clamp revealed that CO improves the insulin sensitivity of the liver and adipose tissues, without affecting skeletal muscles. These data provide a preliminary understanding of the systemic effects of CO and confirm the promising potential of CORM treatment to prevent obesity and metabolic diseases.">
+                        <div class="time">15:05 (Flash)</div>
+                        <div class="talk-title">Carbon monoxide against metabolic dysfunctions</div>
+                        <div class="talk-author">Alana Vannay (PHYM)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s3_f2')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item"><div class="time">15:10</div><div class="talk-title">Coffee Break</div></div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s3_t2" data-talk-name="Oriane Foussadier" data-abstract="Zebrafish scales are a great system to study the principles of bone regeneration. Scales are thin millimeter sized bone disks which after loss, re-grow to their original shape in 15 days. During regeneration, bone collagen depositing cells, called osteoblasts, first differentiate, then proliferate and ultimately grow through hypertrophy instructed by Erk activity waves. In other fishes, the bone plate arranges in helixes of successive collagen layers with distinct fibers orientations. However, the macroscopic process of this formation by osteoblasts especially in regeneration is still unknown, and so is the contribution of Erk signaling. Thus, using, both, theory and experiments, with SHG and live imaging microscopy, we study osteoblasts shape, cytoskeleton and collagen nematic patterns. We found that the chiral bone structure arises from Erk-influenced osteoblasts dynamics.">
+                        <div class="time">15:25</div>
+                        <div class="talk-title">Collagen and osteoblast organization in zebrafish</div>
+                        <div class="talk-author">Oriane Foussadier (BIOCHEM)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s3_t2')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s3_f3" data-talk-name="Alakananda Parassini Madappura" data-abstract="Repair and regeneration of traumatic nerve injury is clinically challenging. The gold standard autologous nerve grafting is associated with donor site morbidity, modality mismatch and others. Current nerve guidance conduits (NGCs) lack the necessary structural guidance and biological support. Aligned microchannels can mimic native nerve structures to promote aligned tissue growth while cells provide biological cues. The project aims to develop bioactive nerve grafts, equipped with micro-engineered guidance features and Schwann cells. To provide the 3D topographical guidance of axoglial cells to mature into aligned nerve tissue, we have developed a novel strategy based on filamented light technology (Flight). In this project, we consider biomaterials (collagen) that have similar mechanics, biocompatibility and ability to promote sensory and motor axonal regeneration. Cell migration and behavior will be studied. The optimized therapeutic device will then be transplanted into a rat sciatic nerve injury model to study neuro-muscular tissue regeneration, functional and behavioral recovery.">
+                        <div class="time">15:45 (Flash)</div>
+                        <div class="talk-title">Microengineering nerve guidance conduits</div>
+                        <div class="talk-author">Alakananda Parassini Madappura (CHIRU)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s3_f3')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s3_t3" data-talk-name="Coline Coudeville" data-abstract="Regeneration requires long-range cellular coordination. In regenerating bony zebrafish scales, waves of activity of the Extracellular Receptor Related Kinase (Erk) induce growth of bone-forming tissue. Erk waves were proposed to result from an excitable system including feedback with Erk activators and inhibitors. Here, we characterize how Erk modulate its inhibitors, predicted to limit wave frequency and thus tissue growth. First, we found that Erk waves can form spirals, signature of excitable systems, and exhibit refractory behavior compatible with Erk inhibitors following Erk waves. Using a newly developed single-molecule fluorescence in situ hybridization (smFISH) technique for whole scales, we discovered that Erk waves induces tails of transcript of the inhibitors dusp5, spry2 and spry4. Furthermore, we discovered that Erk waves modulate transcription of the gene osterix, which controls maturation of bone-forming cells. This reveals a transcriptionally encoded mechanism that couples Erk wave inhibition, and arguably wave frequency and tissue growth, with scale maturation throughout regeneration.">
+                        <div class="time">15:50</div>
+                        <div class="talk-title">Erk waves modulate inhibitors in zebrafish regeneration</div>
+                        <div class="talk-author">Coline Coudeville (GENEV)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s3_t3')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item rateable" data-talk-id="d2_s3_f4" data-talk-name="María Palomero Gómez" data-abstract="Phosphorus is an essential plant macronutrient stored as inorganic phosphate (Pi) and phytic acid (InsP6). InsP6 can be further phosphorylated to produce inositol pyrophosphate (PP-InsPs) signaling molecules, involved in diverse regulatory pathways across eukaryotes. In plants, these nutrient messengers play important roles in hormone signaling and in phosphate homeostasis and starvation responses. My research project aims to identify and functionally characterize novel PP-InsP-related proteins in plants. Building on a previous forward genetic suppressor screen in Arabidopsis thaliana, I have mapped several candidate genes that may directly interact with PP-InsPs or participate in associated metabolic pathways. Using a combination of genetic, biochemical, and physiological approaches, and employing A. thaliana and Marchantia polymorpha as model systems, I am functionally characterizing diverse novel protein candidates to unravel their connection with PP-InsPs. In particular, I am focusing on enzyme families potentially involved in PP-InsP catabolism, as well as previously uncharacterized protein groups. Validating these candidate genes and uncovering the function of novel proteins will provide new insights into the regulation of PP-InsP signaling and metabolism in plants.">
+                        <div class="time">16:10 (Flash)</div>
+                        <div class="talk-title">Inositol pyrophosphate signaling in plants</div>
+                        <div class="talk-author">María Palomero Gómez (BIVEG)</div>
+                        <button class="view-abstract-btn" onclick="viewAbstract(event, 'd2_s3_f4')">View Abstract</button>
+                    </div>
+                    
+                    <div class="agenda-item"><div class="time">17:00</div><div class="talk-title">Poster Session II + Apero</div></div>
+                    <div class="agenda-item"><div class="time">18:30</div><div class="talk-title">Free Time</div></div>
+                    <div class="agenda-item"><div class="time">19:30</div><div class="talk-title">Dinner + Party</div></div>
                 </div>
 
                 <div class="agenda-day">
                     <div class="day-header">Day 3 - Friday, March 20, 2026</div>
-                    <div class="agenda-item"><div class="time">07:00</div><div class="agenda-content"><h3>Breakfast</h3></div></div>
-                    <div class="agenda-item"><div class="time">10:00</div><div class="agenda-content"><h3>Workshops</h3><p>3 parallel sessions</p></div></div>
-                    <div class="agenda-item"><div class="time">11:30</div><div class="agenda-content"><h3>Coffee Break</h3></div></div>
-                    <div class="agenda-item"><div class="time">12:00</div><div class="agenda-content"><h3>Career Panel</h3></div></div>
-                    <div class="agenda-item"><div class="time">13:10</div><div class="agenda-content"><h3>Lunch</h3></div></div>
-                    <div class="agenda-item"><div class="time">14:30</div><div class="agenda-content"><h3>Prize Ceremony</h3></div></div>
-                    <div class="agenda-item"><div class="time">15:00</div><div class="agenda-content"><h3>Free Time</h3></div></div>
-                    <div class="agenda-item"><div class="time">17:30</div><div class="agenda-content"><h3>Depart to Geneva</h3></div></div>
-                    <div class="agenda-item"><div class="time">19:30</div><div class="agenda-content"><h3>Arrival at CMU</h3></div></div>
+                    <div class="agenda-item"><div class="time">07:00</div><div class="talk-title">Breakfast + Check-out</div></div>
+                    <div class="agenda-item"><div class="time">10:00</div><div class="talk-title">Workshops</div><div class="talk-author">3 parallel sessions</div></div>
+                    <div class="agenda-item"><div class="time">11:30</div><div class="talk-title">Coffee Break</div></div>
+                    <div class="agenda-item"><div class="time">12:00</div><div class="talk-title">Career Panel</div></div>
+                    <div class="agenda-item"><div class="time">13:10</div><div class="talk-title">Lunch</div></div>
+                    <div class="agenda-item"><div class="time">14:30</div><div class="talk-title">Prize Ceremony</div></div>
+                    <div class="agenda-item"><div class="time">15:00</div><div class="talk-title">Free Time</div></div>
+                    <div class="agenda-item"><div class="time">17:30</div><div class="talk-title">Depart to Geneva</div></div>
+                    <div class="agenda-item"><div class="time">19:30</div><div class="talk-title">Arrival at CMU</div></div>
                 </div>
 
                 <div class="info-card">
@@ -217,7 +417,7 @@
                     <h3>ℹ️ Information</h3>
                     <p><strong>Event:</strong> 5th Annual SciMed PSLS Conference</p>
                     <p><strong>Dates:</strong> March 18-20, 2026</p>
-                    <p><strong>Website:</strong> <a href="https://www.unige.ch/lifesciencesphd/retreat/2026" style="color:#2563eb">unige.ch/lifesciencesphd/retreat/2026</a></p>
+                    <p><strong>Website:</strong> <a href="https://www.unige.ch/lifesciencesphd/retreat/2026" style="color:#96004B">unige.ch/lifesciencesphd/retreat/2026</a></p>
                 </div>
 
                 <div class="info-card">
@@ -235,14 +435,14 @@
                 </div>
                 
                 <div style="background: white; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
-                    <h3 style="color: #1f2937; font-size: 0.95rem; margin-bottom: 0.75rem;">📊 Overview</h3>
+                    <h3 style="color: #96004B; font-size: 0.95rem; margin-bottom: 0.75rem;">📊 Overview</h3>
                     <div class="stats-grid">
                         <div class="stat-box"><div class="stat-number" id="totalVotes">0</div><div class="stat-label">Total Votes</div></div>
                         <div class="stat-box"><div class="stat-number" id="avgRating">0.0</div><div class="stat-label">Avg Rating</div></div>
                     </div>
                 </div>
 
-                <h3 style="color: #1f2937; margin-bottom: 1rem;">🏆 Session Rankings</h3>
+                <h3 style="color: #96004B; margin-bottom: 1rem;">🏆 Session Rankings</h3>
                 <div id="adminContent"></div>
 
                 <button class="btn btn-secondary" onclick="loadAdminData()" style="width:100%; margin-top:1rem;">🔄 Refresh Now</button>
@@ -252,11 +452,23 @@
         </main>
     </div>
 
+    <!-- Abstract Modal -->
+    <div class="modal" id="abstractModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="abstractTitle">Abstract</h2>
+                <p id="abstractAuthor"></p>
+            </div>
+            <div class="abstract-text" id="abstractText"></div>
+            <button class="btn btn-secondary" onclick="closeAbstractModal()" style="width:100%">Close</button>
+        </div>
+    </div>
+
     <!-- Rating Modal -->
     <div class="modal" id="ratingModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Rate This Session</h2>
+                <h2 id="modalTitle">Rate This Talk</h2>
                 <p id="modalSubtitle">Select your rating (1-10 stars)</p>
             </div>
             
@@ -284,6 +496,22 @@
         </div>
     </div>
 
+    <!-- Password Modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔒 Admin Access</h2>
+                <p>Enter password to access admin dashboard</p>
+            </div>
+            <div class="password-error" id="passwordError">Incorrect password. Please try again.</div>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Enter password" onkeypress="if(event.key==='Enter') checkPassword()">
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="checkPassword()">Submit</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -307,6 +535,7 @@
 
         let currentTalkId = null;
         let selectedRating = 0;
+        const ADMIN_PASSWORD = 'Mobilitrain@2024';
 
         // Navigation
         const navItems = document.querySelectorAll('.nav-item');
@@ -320,8 +549,25 @@
             });
         });
 
-        // Admin button
+        // Admin button with password protection
         document.getElementById('adminBtn').addEventListener('click', () => {
+            document.getElementById('passwordModal').classList.add('active');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').style.display = 'none';
+        });
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            if (input === ADMIN_PASSWORD) {
+                closePasswordModal();
+                showAdminDashboard();
+            } else {
+                document.getElementById('passwordError').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        function showAdminDashboard() {
             navItems.forEach(n => n.classList.remove('active'));
             sections.forEach(s => s.classList.remove('active'));
             document.getElementById('admin').classList.add('active');
@@ -334,7 +580,11 @@
                     console.error('Listener error:', error);
                 }
             }
-        });
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
 
         document.getElementById('backBtn').addEventListener('click', () => {
             navItems.forEach((n, i) => {
@@ -345,39 +595,29 @@
             document.getElementById('contact').classList.add('active');
         });
 
-        // RESET ALL DATA
-        function resetAllData() {
-            if (!confirm('⚠️ Delete ALL ratings?')) return;
-            if (!confirm('Really? Cannot be undone!')) return;
-
-            try {
-                localStorage.clear();
-                console.log('✅ localStorage cleared');
-            } catch (error) {
-                console.error('localStorage error:', error);
-            }
-
-            if (firebaseInitialized && database) {
-                database.ref('ratings').remove()
-                    .then(() => {
-                        console.log('✅ Firebase cleared');
-                        alert('✅ All data reset!');
-                        loadAdminData();
-                    })
-                    .catch((error) => {
-                        console.error('Firebase error:', error);
-                        alert('Local cleared, Firebase error: ' + error.message);
-                        loadAdminData();
-                    });
-            } else {
-                alert('✅ Local data cleared!');
-                loadAdminData();
-            }
+        // View abstract function
+        function viewAbstract(event, talkId) {
+            event.stopPropagation();
+            const talkElement = event.target.closest('.rateable');
+            const title = talkElement.dataset.talkName;
+            const author = talkElement.querySelector('.talk-author').textContent;
+            const abstract = talkElement.dataset.abstract;
+            
+            document.getElementById('abstractTitle').textContent = title;
+            document.getElementById('abstractAuthor').textContent = author;
+            document.getElementById('abstractText').textContent = abstract;
+            document.getElementById('abstractModal').classList.add('active');
         }
 
-        // Rating modal
+        function closeAbstractModal() {
+            document.getElementById('abstractModal').classList.remove('active');
+        }
+
+        // Rating modal for student talks
         document.querySelectorAll('.rateable').forEach(item => {
-            item.addEventListener('click', () => {
+            item.addEventListener('click', (e) => {
+                if (e.target.classList.contains('view-abstract-btn')) return;
+                
                 currentTalkId = item.dataset.talkId;
                 document.getElementById('modalTitle').textContent = item.dataset.talkName;
                 
@@ -435,7 +675,7 @@
                 display.style.color = '#6b7280';
             } else {
                 display.textContent = `${rating}/10`;
-                display.style.color = '#2563eb';
+                display.style.color = '#007E64';
             }
         }
 
@@ -502,17 +742,69 @@
             setTimeout(() => closeModal(), 1500);
         }
 
+        // RESET ALL DATA
+        function resetAllData() {
+            if (!confirm('⚠️ Delete ALL ratings?')) return;
+            if (!confirm('Really? Cannot be undone!')) return;
+
+            try {
+                localStorage.clear();
+                console.log('✅ localStorage cleared');
+            } catch (error) {
+                console.error('localStorage error:', error);
+            }
+
+            if (firebaseInitialized && database) {
+                database.ref('ratings').remove()
+                    .then(() => {
+                        console.log('✅ Firebase cleared');
+                        alert('✅ All data reset!');
+                        loadAdminData();
+                    })
+                    .catch((error) => {
+                        console.error('Firebase error:', error);
+                        alert('Local cleared, Firebase error: ' + error.message);
+                        loadAdminData();
+                    });
+            } else {
+                alert('✅ Local data cleared!');
+                loadAdminData();
+            }
+        }
+
         // Load admin data
         function loadAdminData() {
             const adminContent = document.getElementById('adminContent');
             adminContent.innerHTML = '<p style="text-align:center;color:#6b7280;padding:2rem;">Loading...</p>';
             
+            // All student talks and flash talks
             const sessions = [
-                { id: 'd1_s1', name: 'Day 1 - Session 1 (11:10)' },
-                { id: 'd1_s2', name: 'Day 1 - Session 2 (14:40)' },
-                { id: 'd2_s1', name: 'Day 2 - Session 3 (09:40)' },
-                { id: 'd2_s2', name: 'Day 2 - Session 4 (11:00)' },
-                { id: 'd2_s3', name: 'Day 2 - Session 5 (15:10)' }
+                { id: 'd1_s1_t1', name: 'Day 1 - Corentin Montessuit' },
+                { id: 'd1_s1_f1', name: 'Day 1 - Margulan Otanuly (Flash)' },
+                { id: 'd1_s1_t2', name: 'Day 1 - Crisalida Borges' },
+                { id: 'd1_s1_f2', name: 'Day 1 - Ji Wang (Flash)' },
+                { id: 'd1_s2_f1', name: 'Day 1 - Daniel Reichenpfader (Flash)' },
+                { id: 'd1_s2_t1', name: 'Day 1 - Annet Puthenpurackal' },
+                { id: 'd1_s2_f2', name: 'Day 1 - Ornella Chardonnet (Flash)' },
+                { id: 'd1_s2_t2', name: 'Day 1 - Leonardo Marconi' },
+                { id: 'd1_s2_f3', name: 'Day 1 - Maxim Marfin (Flash)' },
+                { id: 'd2_s1_t1', name: 'Day 2 - Petros Liakopoulos' },
+                { id: 'd2_s1_t2', name: 'Day 2 - Loris Levet' },
+                { id: 'd2_s1_f1', name: 'Day 2 - Saurabh Mathur (Flash)' },
+                { id: 'd2_s1_t3', name: 'Day 2 - Souradip Mukherjee' },
+                { id: 'd2_s2_t1', name: 'Day 2 - Flaela Kalemi' },
+                { id: 'd2_s2_f1', name: 'Day 2 - Junyi Yang (Flash)' },
+                { id: 'd2_s2_t2', name: 'Day 2 - Jérémy Kessler' },
+                { id: 'd2_s2_t3', name: 'Day 2 - Fandilla-Marie Furlan' },
+                { id: 'd2_s2_f2', name: 'Day 2 - Paola Isabel Aguirre (Flash)' },
+                { id: 'd2_s2_t4', name: 'Day 2 - Rossana Putino' },
+                { id: 'd2_s3_f1', name: 'Day 2 - Sandra Moreno Sanchez (Flash)' },
+                { id: 'd2_s3_t1', name: 'Day 2 - Tanner Smith' },
+                { id: 'd2_s3_f2', name: 'Day 2 - Alana Vannay (Flash)' },
+                { id: 'd2_s3_t2', name: 'Day 2 - Oriane Foussadier' },
+                { id: 'd2_s3_f3', name: 'Day 2 - Alakananda Parassini (Flash)' },
+                { id: 'd2_s3_t3', name: 'Day 2 - Coline Coudeville' },
+                { id: 'd2_s3_f4', name: 'Day 2 - María Palomero Gómez (Flash)' }
             ];
 
             if (firebaseInitialized && database) {
@@ -588,7 +880,7 @@
                 html = `
                     <div style="text-align:center;padding:3rem;color:#6b7280;">
                         <div style="font-size:3rem;margin-bottom:1rem;">📊</div>
-                        <h3 style="color:#1f2937;margin-bottom:0.5rem;">No Ratings Yet</h3>
+                        <h3 style="color:#96004B;margin-bottom:0.5rem;">No Ratings Yet</h3>
                         <p style="font-size:0.875rem;">Start voting to see results!</p>
                     </div>
                 `;
@@ -597,13 +889,25 @@
             document.getElementById('adminContent').innerHTML = html;
         }
 
-        // Modal close
+        // Modal close handlers
+        document.getElementById('abstractModal').addEventListener('click', (e) => {
+            if (e.target.id === 'abstractModal') closeAbstractModal();
+        });
+
         document.getElementById('ratingModal').addEventListener('click', (e) => {
             if (e.target.id === 'ratingModal') closeModal();
         });
 
+        document.getElementById('passwordModal').addEventListener('click', (e) => {
+            if (e.target.id === 'passwordModal') closePasswordModal();
+        });
+
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
+            if (e.key === 'Escape') {
+                closeModal();
+                closeAbstractModal();
+                closePasswordModal();
+            }
         });
 
         console.log('App loaded, Firebase:', firebaseInitialized);
